@@ -1,6 +1,4 @@
-#!/usr/bin/python
-
-from common import *
+from epflmanager.commands.common import *
 
 class Horaire(object):
     @staticmethod

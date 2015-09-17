@@ -1,0 +1,13 @@
+* EPFLManager
+Add commands to ease the day-to-day operations at EPFL
+
+* TODOs
+** Use a config file instead of hardcoded paths
+
+* Future?
+** ncurses interface
+** Courses download
+** Tags/Annotations on files
+** Agenda/TODOs
+** Ease backups and archiving
+** Go all out and integrate Moodle/IS-Academia/EPFLCampus/...
