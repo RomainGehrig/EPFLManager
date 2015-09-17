@@ -45,6 +45,14 @@ class Path(object):
         return inner_mem
 
 class Directory(Path):
+    def read_file(self, filename):
+        f = self.get_file(filename)
+        return f.read() if f is not None else None
+
+    def get_file(self, filename):
+        files = list(filter(lambda f: f.name == filename, self.files()))
+        return files[0] if len(files) != 0 else None
+
     @Path.memoize("dirs")
     def dirs(self):
         return list(map(Directory(self), dirs_in(self.fullpath())))
@@ -59,14 +67,9 @@ class File(Path):
             return f.read()
 
 class Course(Directory):
-    def read_file(self, filename):
-        files = list(filter(lambda f: f.name == filename, self.files()))
-        return files[0].read() if len(files) != 0 else None
+    pass
 
 class Semester(Directory):
-    def __init__(self, *args):
-        super(Directory, self).__init__(*args)
-
     @Path.memoize("courses")
     def courses(self):
         return list(map(Course(self), filter(is_course_dir, dirs_in(self.fullpath()))))
@@ -79,6 +82,12 @@ def sys_open(arg):
     if arg:
         arg = arg.split()[0]
         os.system("open %s" % (arg))
+
+def display_img(path):
+    # TODO: security
+    if path:
+        path = path.split()[0]
+        os.system("imgcat %s" % (path))
 
 def is_course_dir(d):
     """ Decide if a directory can be a course directory
