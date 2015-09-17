@@ -1,0 +1,8 @@
+#!/usr/bin/python
+
+from common import *
+
+if __name__ == "__main__":
+    horaire = latest_semester().get_file("horaire.png")
+    if horaire:
+        display_img = display_img(horaire.fullpath())
