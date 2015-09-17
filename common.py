@@ -3,7 +3,6 @@ import sys
 
 EPFL_DIR = "/Users/cranium/Documents/EPFL/"
 SEMESTER_VALID_DIRS = ["BA", "MA"]
-SITE_FILENAME = "site.url"
 
 class Path(object):
     def __new__(cls, parent):
@@ -11,9 +10,9 @@ class Path(object):
             obj = object.__new__(cls)
             obj.__init__(parent, name, *args, **kwargs)
             return obj
-        
+
         return set_name
-    
+
     def __init__(self, parent, name):
         if isinstance(parent, File):
             raise Exception("A path cannot have a file parent")
@@ -23,7 +22,7 @@ class Path(object):
         self.name = name
 
     def __str__(self):
-        return "%s: %s" % (self.__class__.__name__, self.name) 
+        return "%s: %s" % (self.__class__.__name__, self.name)
 
     def __repr__(self):
         return "<" + str(self) + ">"
@@ -49,7 +48,7 @@ class Directory(Path):
     @Path.memoize("dirs")
     def dirs(self):
         return list(map(Directory(self), dirs_in(self.fullpath())))
-    
+
     @Path.memoize("files")
     def files(self):
         return list(map(File(self), files_in(self.fullpath())))
@@ -60,9 +59,9 @@ class File(Path):
             return f.read()
 
 class Course(Directory):
-    def get_url(self):
-        url = list(filter(lambda f: f.name == SITE_FILENAME, self.files()))
-        return url[0].read() if len(url) != 0 else None
+    def read_file(self, filename):
+        files = list(filter(lambda f: f.name == filename, self.files()))
+        return files[0].read() if len(files) != 0 else None
 
 class Semester(Directory):
     def __init__(self, *args):
@@ -72,9 +71,14 @@ class Semester(Directory):
     def courses(self):
         return list(map(Course(self), filter(is_course_dir, dirs_in(self.fullpath()))))
 
+    def filter_courses(self, key=lambda x: x):
+        return [c for c in self.courses() if key(c)]
+
 def sys_open(arg):
     # TODO: security
-    os.system("open %s" % (arg.split()[0]))
+    if arg:
+        arg = arg.split()[0]
+        os.system("open %s" % (arg))
 
 def is_course_dir(d):
     """ Decide if a directory can be a course directory
@@ -96,13 +100,13 @@ def files_in(p, hidden=False):
     return [f for f in os.listdir(p) if os.path.isfile(os.path.join(p,f)) and f.startswith(".") <= hidden]
 
 def semesters():
-    """ Returns all semesters dirs (full path) """
-    return [os.path.join(EPFL_DIR,d) for d in dirs_in(EPFL_DIR) if is_semester_dir(d)]
+    """ Returns all semesters """
+    return [ Semester(EPFL_DIR)(d) for d in dirs_in(EPFL_DIR) if is_semester_dir(d) ]
 
-def latest_semester(): 
+def latest_semester():
     # As semesters returns full paths, it may be usefull to sort only on
     # the last dir instead of the full path
-    return sorted(semesters(), reverse=True)[0]
+    return sorted(semesters(), key=lambda s: s.name, reverse=True)[0]
 
 def courses(semester=None):
     if semester is None:
@@ -110,12 +114,20 @@ def courses(semester=None):
 
     return [ c for c in dirs_in(semester) ]
 
-def autocomplete_course(course, semester=None):
-    """ Returns all possible courses that may match the course argument """
-    return [ c for c in courses(semester) if c.lower().startswith(course.lower()) ]
+# def autocomplete_course(course, semester=None):
+#     """ Returns all possible courses that may match the course argument """
+#     return [ c for c in courses(semester) if c.lower().startswith(course.lower()) ]
 
-def handle_ambiguity(possible_choices, display_failure=True, exit_on_failure=False):
-    def exit():
+def fuzzy_match(to_match, model, key=lambda x: x, case_insensitive=True):
+    """ Return True iff the to_match "fuzzy matches" the model.
+    Not so fuzzy for the moment """
+
+    lower = lambda x: x.lower() if case_insensitive else lambda x: x
+
+    return lower(key(model)).startswith(lower(to_match))
+
+def handle_ambiguity(possible_choices, display_func=lambda x: str(x), display_failure=True, exit_on_failure=False):
+    def exit_():
         if exit_on_failure:
             sys.exit(1)
     def display(s):
@@ -126,10 +138,9 @@ def handle_ambiguity(possible_choices, display_failure=True, exit_on_failure=Fal
         return possible_choices[0]
     elif len(possible_choices) == 0:
         display("No choice found")
-        exit()
+        exit_()
     else:
-        display("Ambiguous choices: %s" % (",".join(possible_choices)))
-        exit()
-    
-    return False
+        display("Ambiguous choices: %s" % (", ".join(map(display_func, possible_choices))))
+        exit_()
 
+    return False
