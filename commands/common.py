@@ -123,10 +123,6 @@ def courses(semester=None):
 
     return [ c for c in dirs_in(semester) ]
 
-# def autocomplete_course(course, semester=None):
-#     """ Returns all possible courses that may match the course argument """
-#     return [ c for c in courses(semester) if c.lower().startswith(course.lower()) ]
-
 def fuzzy_match(to_match, model, key=lambda x: x, case_insensitive=True):
     """ Return True iff the to_match "fuzzy matches" the model.
     Not so fuzzy for the moment """
@@ -152,4 +148,4 @@ def handle_ambiguity(possible_choices, display_func=lambda x: str(x), display_fa
         display("Ambiguous choices: %s" % (", ".join(map(display_func, possible_choices))))
         exit_()
 
-    return False
+    return None

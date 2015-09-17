@@ -1,0 +1,18 @@
+#!/usr/bin/python
+
+import argparse
+from commands.site import Site
+from commands.horaire import Horaire
+
+parser = argparse.ArgumentParser(description='Manage EPFL courses')
+
+subparsers = parser.add_subparsers()
+site_parser = subparsers.add_parser("site", aliases=["s"])
+site_parser.add_argument("course")
+site_parser.set_defaults(func=Site.run)
+
+horaire = subparsers.add_parser("horaire", aliases=["h"])
+horaire.set_defaults(func=Horaire.run)
+
+args = parser.parse_args()
+args.func(args)
