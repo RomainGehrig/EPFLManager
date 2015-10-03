@@ -1,5 +1,9 @@
 
 from setuptools import setup
+from pip.req import parse_requirements
+import pip
+
+requirements = parse_requirements("requirements.txt", session=pip.download.PipSession())
 
 setup(name='epflmanager',
       version='0.1',
@@ -10,4 +14,5 @@ setup(name='epflmanager',
       license='MIT',
       packages=['epflmanager'],
       scripts=['bin/epfl'],
+      install_requires=[str(r.req) for r in requirements],
       zip_safe=False)
