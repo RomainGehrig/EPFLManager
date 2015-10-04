@@ -1,9 +1,10 @@
-#!/usr/local/bin/python3
-
+#!python3
 import argparse
+
 from epflmanager.commands.site import Site
 from epflmanager.commands.horaire import Horaire
 from epflmanager.commands.courses import Courses
+from epflmanager.commands.open import Open
 
 parser = argparse.ArgumentParser(description='Manage EPFL courses')
 
@@ -12,11 +13,18 @@ site_parser = subparsers.add_parser("site", aliases=["s"])
 site_parser.add_argument("course")
 site_parser.set_defaults(func=Site.run)
 
+open_parser = subparsers.add_parser("open", aliases=["o"])
+open_parser.add_argument("course")
+open_parser.add_argument("target", default="site", nargs="?")
+open_parser.set_defaults(func=Open.run)
+
 horaire = subparsers.add_parser("horaire", aliases=["h"])
 horaire.set_defaults(func=Horaire.run)
 
 courses = subparsers.add_parser("courses")
 courses.set_defaults(func=Courses.run)
+
+parser.set_defaults(func=Courses.run)
 
 args = parser.parse_args()
 args.func(args)
