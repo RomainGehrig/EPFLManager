@@ -67,7 +67,8 @@ class File(Path):
             return f.read()
 
 class Course(Directory):
-    pass
+    def __str__(self):
+        return self.name
 
 class Semester(Directory):
     @Path.memoize("courses")
