@@ -1,8 +1,8 @@
 * EPFLManager
 Add commands to ease the day-to-day operations at EPFL
 
-** TODOs
-- Use a config file instead of hardcoded paths
+** TODOs [0/1]
+- [ ] Use a config file instead of hardcoded paths
 
 ** Future?
 - ncurses interface
@@ -11,3 +11,6 @@ Add commands to ease the day-to-day operations at EPFL
 - Agenda/TODOs
 - Ease backups and archiving
 - Go all out and integrate Moodle/IS-Academia/EPFLCampus/...
+- RSS reader
+- PDF reader with annotations / fast
+- Daemon local srv to enable multiple types of clients (console, web, remote?)
