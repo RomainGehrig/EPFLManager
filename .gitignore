@@ -2,3 +2,6 @@
 /dist/
 /*.egg-info
 .DS_Store
+*.dat
+*.log
+*.cookies
