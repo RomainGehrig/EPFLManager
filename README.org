@@ -1,8 +1,46 @@
 * EPFLManager
 Add commands to ease the day-to-day operations at EPFL
 
-** TODOs [0/1]
+** TODOs [0/4]
+- [ ] Register courses in local directory (= establish a correspondance between local and remote)
 - [ ] Use a config file instead of hardcoded paths
+- [ ] Permit to have multiple URLs for a course
+- [ ] Does a resource change id when updated ? (maybe ask a teacher)
+  - If it does it can be used to see if there is a change
+  - History ?
+- [ ] Borders: └┘┼─┴├┤┬┌┐│
+- [ ] Symbols (need the most readable): ‹› <> ❲❳ [] ⟨⟩ () {}
+- [ ] Bullets ?
+
+#+BEGIN_SRC :raw
+
+
+v1
+┌─ Select course ──────────────────────────
+│ - [ ] Algorithms                  [17/19]
+│  - ├─ [X] General                   [1/1]
+│    │   └─ [D] Last year exam
+│  + ├─ [ ] Week1
+│  + ├─ [ ] Week2
+│  + ├─ [ ] Week3
+│  + └─ [ ] Week4
+│
+│---- Selected document informations ------
+┼──────────────────────────────────────────
+│ [^X] Shortcut #1  [^Y] Shortcut #2
+┴──────────────────────────────────────────
+
+v2 (compact)
+┌─ Select course ──────────────────────────
+│ - [ ] Algorithms [17/19]
+│  - ├[.] General [6/6]
+│    │ └[d] Last year exam
+│  + ├[ ] Week1
+│  + ├[ ] Week2
+│  + ├[ ] Week3
+│  + └[ ] Week4
+
+#+END_SRC
 
 ** Future?
 - ncurses interface
