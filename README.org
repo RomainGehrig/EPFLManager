@@ -1,16 +1,22 @@
 * EPFLManager
 Add commands to ease the day-to-day operations at EPFL
 
-** TODOs [0/4]
-- [ ] Register courses in local directory (= establish a correspondance between local and remote)
+** TODOs [1/6]
+- [ ] Moodle [0/3]
+  - [ ] Register courses in local directory (= establish a correspondance between local and remote)
+  - [ ] Download material from Moodle
+  - [ ] Does a resource change id when updated ? (maybe ask a teacher)
+    - If it does it can be used to see if there is a change
+    - History ?
+- [ ] UI [0/4]
+  - [ ] Module to handle IO from user
+  - [ ] Symbols (need the most readable): ‹› <> ❲❳ [] ⟨⟩ () {}
+  - [ ] Borders: └┘┼─┴├┤┬┌┐│
+  - [ ] Bullets ?
+- [ ] Daemonize
+- [ ] Documente how Tequila process works
 - [ ] Use a config file instead of hardcoded paths
-- [ ] Permit to have multiple URLs for a course
-- [ ] Does a resource change id when updated ? (maybe ask a teacher)
-  - If it does it can be used to see if there is a change
-  - History ?
-- [ ] Borders: └┘┼─┴├┤┬┌┐│
-- [ ] Symbols (need the most readable): ‹› <> ❲❳ [] ⟨⟩ () {}
-- [ ] Bullets ?
+- [X] Permit to have multiple URLs for a course
 
 #+BEGIN_SRC :raw
 
@@ -39,6 +45,10 @@ v2 (compact)
 │  + ├[ ] Week2
 │  + ├[ ] Week3
 │  + └[ ] Week4
+│
+┼──── Selected document informations ──────
+│ [^X] Shortcut #1  [^Y] Shortcut #2
+┴──────────────────────────────────────────
 
 #+END_SRC
 

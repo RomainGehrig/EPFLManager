@@ -1,5 +1,8 @@
 import os
 import sys
+import logging
+
+logger = logging.getLogger(__name__)
 
 EPFL_DIR = "/Users/cranium/Documents/EPFL/"
 SEMESTER_VALID_DIRS = ["BA", "MA"]
@@ -82,6 +85,7 @@ def sys_open(arg):
     # TODO: security
     if arg:
         arg = arg.split()[0]
+        logger.info("Opening '%s'" % arg)
         os.system("open %s" % (arg))
 
 def display_img(path):
@@ -132,21 +136,64 @@ def fuzzy_match(to_match, model, key=lambda x: x, case_insensitive=True):
 
     return lower(key(model)).startswith(lower(to_match))
 
-def handle_ambiguity(possible_choices, display_func=lambda x: str(x), display_failure=True, exit_on_failure=False):
-    def exit_():
+def site_file_handler(content):
+    sites = []
+    for line in content.splitlines():
+        url, _, label = line.partition(' ')
+        sites.append((url,label if label else "Default"))
+
+    logger.info("Found sites %s." % str(sites))
+    if len(sites) == 0:
+        return None
+    elif len(sites) == 1:
+        return sites[0][0]
+    else:
+        return handle_ambiguity(sites, display_func=lambda x: "%s (%s)" % (x[1].ljust(12),x[0]))
+
+class NoChoiceException(Exception): pass
+
+def choose_from_choices(choices, display_func=str, can_quit=True):
+    logger.info('Choices to choose from %s' % ', '.join(map(display_func, choices)))
+    choices_dict = { str(i): choice for i,choice in enumerate(choices,start=1) }
+    while(True):
+        for i,choice in sorted(choices_dict.items()):
+            print("[{i}] {choice}".format(i=i, choice=display_func(choice)))
+        if can_quit:
+            print("[q] Quit")
+
+        selection = input("Choose: ")
+        if selection in choices_dict:
+            return choices_dict[selection]
+        elif can_quit and selection is "q":
+            logger.info("User chose to quit")
+            raise NoChoiceException('User quitted')
+        else: # Invalid selection
+            print("Invalid selection. Please select a valid one.")
+
+def handle_ambiguity(possible_choices, display_func=str, display_failure=True, exit_on_failure=False):
+    def exit_if_failed():
+        logger.info("Would exit if it was enabled.")
         if exit_on_failure:
             sys.exit(1)
-    def display(s):
+    def display_if_enabled(s):
         if display_failure:
             print(s)
+        else:
+            logger.info(s)
 
-    if len(possible_choices) == 1:
+    logger.info('Possible choices: %s' % ', '.join(map(display_func, possible_choices)))
+
+    if len(possible_choices) == 0:
+        display_if_enabled("No choice found")
+        exit_if_failed()
+    elif len(possible_choices) == 1:
         return possible_choices[0]
-    elif len(possible_choices) == 0:
-        display("No choice found")
-        exit_()
     else:
-        display("Ambiguous choices: %s" % (", ".join(map(display_func, possible_choices))))
-        exit_()
-
-    return None
+        exit_if_failed()
+        try:
+            #display_if_enabled("Ambiguous choices: %s" % (", ".join(map(display_func, possible_choices))))
+            display_if_enabled("Multiple choices:")
+            return choose_from_choices(possible_choices, display_func=display_func)
+        except NoChoiceException:
+            logger.info('User did not choose anything, return None')
+            return None
