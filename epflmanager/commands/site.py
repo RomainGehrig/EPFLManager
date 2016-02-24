@@ -12,4 +12,4 @@ class Site(object):
                                             display_func=lambda s: s.name)
 
         if course_directory:
-            sys_open(site_file_handler(course_directory.read_file(SITE_FILENAME)))
+            sys_open(site_file_handler(course_directory.read_file(SITE_FILENAME))[0])

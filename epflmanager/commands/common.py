@@ -7,6 +7,9 @@ logger = logging.getLogger(__name__)
 EPFL_DIR = "/Users/cranium/Documents/EPFL/"
 SEMESTER_VALID_DIRS = ["BA", "MA"]
 
+if sys.version_info.major == 2:
+    input = raw_input
+
 class Path(object):
     def __new__(cls, parent):
         def set_name(name, *args, **kwargs):
@@ -85,7 +88,7 @@ def sys_open(arg):
     # TODO: security
     if arg:
         arg = arg.split()[0]
-        logger.info("Opening '%s'" % arg)
+        logger.debug("Opening '%s'" % arg)
         os.system("open %s" % (arg))
 
 def display_img(path):
@@ -142,7 +145,7 @@ def site_file_handler(content):
         url, _, label = line.partition(' ')
         sites.append((url,label if label else "Default"))
 
-    logger.info("Found sites %s." % str(sites))
+    logger.debug("Found sites %s." % str(sites))
     if len(sites) == 0:
         return None
     elif len(sites) == 1:
@@ -153,7 +156,6 @@ def site_file_handler(content):
 class NoChoiceException(Exception): pass
 
 def choose_from_choices(choices, display_func=str, can_quit=True):
-    logger.info('Choices to choose from %s' % ', '.join(map(display_func, choices)))
     choices_dict = { str(i): choice for i,choice in enumerate(choices,start=1) }
     while(True):
         for i,choice in sorted(choices_dict.items()):
@@ -161,18 +163,18 @@ def choose_from_choices(choices, display_func=str, can_quit=True):
         if can_quit:
             print("[q] Quit")
 
-        selection = input("Choose: ")
+        selection = input("Choice: ")
         if selection in choices_dict:
             return choices_dict[selection]
-        elif can_quit and selection is "q":
-            logger.info("User chose to quit")
+        elif can_quit and selection == "q":
+            logger.debug("User chose to quit")
             raise NoChoiceException('User quitted')
         else: # Invalid selection
             print("Invalid selection. Please select a valid one.")
 
 def handle_ambiguity(possible_choices, display_func=str, display_failure=True, exit_on_failure=False):
     def exit_if_failed():
-        logger.info("Would exit if it was enabled.")
+        logger.debug("Would exit if it was enabled.")
         if exit_on_failure:
             sys.exit(1)
     def display_if_enabled(s):
@@ -181,7 +183,7 @@ def handle_ambiguity(possible_choices, display_func=str, display_failure=True, e
         else:
             logger.info(s)
 
-    logger.info('Possible choices: %s' % ', '.join(map(display_func, possible_choices)))
+    logger.debug('Possible choices: %s' % ', '.join(map(display_func, possible_choices)))
 
     if len(possible_choices) == 0:
         display_if_enabled("No choice found")

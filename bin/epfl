@@ -1,5 +1,6 @@
-#!python3
 import argparse
+import logging
+logging.basicConfig(level=logging.INFO)
 
 from epflmanager.commands.site import Site
 from epflmanager.commands.horaire import Horaire
