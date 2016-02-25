@@ -143,16 +143,27 @@ class NoChoiceException(Exception): pass
 class EmptyFileException(Exception): pass
 
 def site_file_handler(content):
+    import re
+   # Accepted inputs examples
+    # 1) http://example.com Label of the site
+    # 2) http://example.com
+    regex = re.compile("^\s*(?P<url>\S+)\s*(?P<label>(?<=\s)\S*)?\s*$")
+
     sites = []
     for line in content.splitlines():
-        url, _, label = line.partition(' ')
-        sites.append((url,label if label else "Default"))
+        m = regex.match(line)
+        if m is None:
+            continue
+
+        url = m.groupdict().get('url')
+        label = m.groupdict().get('label','Default')
+        sites.append((url,label))
 
     logger.debug("Found sites %s." % str(sites))
     if len(sites) == 0:
         raise EmptyFileException("No site found in the file")
     elif len(sites) == 1:
-        return sites[0][0]
+        return sites[0]
     else:
         return handle_ambiguity(sites, display_func=lambda x: "%s (%s)" % (x[1].ljust(12),x[0]))
 
