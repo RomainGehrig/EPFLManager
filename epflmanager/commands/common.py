@@ -139,6 +139,9 @@ def fuzzy_match(to_match, model, key=lambda x: x, case_insensitive=True):
 
     return lower(key(model)).startswith(lower(to_match))
 
+class NoChoiceException(Exception): pass
+class EmptyFileException(Exception): pass
+
 def site_file_handler(content):
     sites = []
     for line in content.splitlines():
@@ -147,13 +150,12 @@ def site_file_handler(content):
 
     logger.debug("Found sites %s." % str(sites))
     if len(sites) == 0:
-        return None
+        raise EmptyFileException("No site found in the file")
     elif len(sites) == 1:
         return sites[0][0]
     else:
         return handle_ambiguity(sites, display_func=lambda x: "%s (%s)" % (x[1].ljust(12),x[0]))
 
-class NoChoiceException(Exception): pass
 
 def choose_from_choices(choices, display_func=str, can_quit=True):
     choices_dict = { str(i): choice for i,choice in enumerate(choices,start=1) }
@@ -198,4 +200,4 @@ def handle_ambiguity(possible_choices, display_func=str, display_failure=True, e
             return choose_from_choices(possible_choices, display_func=display_func)
         except NoChoiceException:
             logger.info('User did not choose anything, return None')
-            return None
+            raise
