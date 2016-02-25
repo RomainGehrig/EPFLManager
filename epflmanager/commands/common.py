@@ -185,11 +185,7 @@ def choose_from_choices(choices, display_func=str, can_quit=True):
         else: # Invalid selection
             print("Invalid selection. Please select a valid one.")
 
-def handle_ambiguity(possible_choices, display_func=str, display_failure=True, exit_on_failure=False):
-    def exit_if_failed():
-        logger.debug("Would exit if it was enabled.")
-        if exit_on_failure:
-            sys.exit(1)
+def handle_ambiguity(possible_choices, display_func=str, display_failure=True):
     def display_if_enabled(s):
         if display_failure:
             print(s)
@@ -200,15 +196,14 @@ def handle_ambiguity(possible_choices, display_func=str, display_failure=True, e
 
     if len(possible_choices) == 0:
         display_if_enabled("No choice found")
-        exit_if_failed()
+        raise NoChoiceException("No choice found")
     elif len(possible_choices) == 1:
         return possible_choices[0]
     else:
-        exit_if_failed()
         try:
             #display_if_enabled("Ambiguous choices: %s" % (", ".join(map(display_func, possible_choices))))
             display_if_enabled("Multiple choices:")
             return choose_from_choices(possible_choices, display_func=display_func)
         except NoChoiceException:
-            logger.info('User did not choose anything, return None')
+            logger.info('User did not choose anything')
             raise
