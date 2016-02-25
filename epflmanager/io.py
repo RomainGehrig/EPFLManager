@@ -33,7 +33,7 @@ class ConsoleManager(IOManager):
         kwargs.update(file=self.printer)
         return print(*args,**kwargs)
 
-    def choose_from(self, choices, display_func=str, can_quit=True, auto_choice_if_unique=True):
+    def choose_from(self, choices, msg=None, display_func=str, can_quit=True, auto_choice_if_unique=True):
         """ Return what the user chose """
         if not choices:
             raise NoChoiceException("No choice to do")
@@ -42,6 +42,8 @@ class ConsoleManager(IOManager):
 
         choices_dict = { str(i): choice for i,choice in enumerate(choices,start=1) }
         while(True):
+            if msg is not None:
+                self.print(msg)
             for i,choice in sorted(choices_dict.items()):
                 self.print("[{i}] {choice}".format(i=i, choice=display_func(choice)))
             if can_quit:

@@ -1,15 +1,15 @@
 * EPFLManager
 Add commands to ease the day-to-day operations at EPFL
 
-** TODOs [1/10]
+** TODOs [1/9]
 - [ ] Moodle [0/3]
   - [ ] Register courses in local directory (= establish a correspondance between local and remote)
   - [ ] Download material from Moodle
   - [ ] Does a resource change id when updated ? (maybe ask a teacher)
     - If it does it can be used to see if there is a change
     - History ?
-- [ ] Console GUI [0/4]
-  - [ ] Module to handle IO from user
+- [-] Console GUI [1/4]
+  - [X] Module to handle IO from user
   - [ ] Symbols (need the most readable): ‹› <> ❲❳ [] ⟨⟩ () {}
   - [ ] Borders: └┘┼─┴├┤┬┌┐│
   - [ ] Bullets ?

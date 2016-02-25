@@ -11,11 +11,12 @@ from epflmanager.commands.open import Open
 from epflmanager.io import ConsoleManager
 
 manager = ConsoleManager()
-parser = argparse.ArgumentParser(description='Manage EPFL courses')
 
 siteFunc    = partial(Site.run, manager=manager)
 openFunc    = partial(Open.run, manager=manager)
 coursesFunc = partial(Courses.run, manager=manager)
+
+parser = argparse.ArgumentParser(description='Manage EPFL courses')
 
 subparsers = parser.add_subparsers()
 site_parser = subparsers.add_parser("site", aliases=["s"])
