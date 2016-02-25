@@ -1,26 +1,30 @@
 * EPFLManager
 Add commands to ease the day-to-day operations at EPFL
 
-** TODOs [1/6]
+** TODOs [1/10]
 - [ ] Moodle [0/3]
   - [ ] Register courses in local directory (= establish a correspondance between local and remote)
   - [ ] Download material from Moodle
   - [ ] Does a resource change id when updated ? (maybe ask a teacher)
     - If it does it can be used to see if there is a change
     - History ?
-- [ ] UI [0/4]
+- [ ] Console GUI [0/4]
   - [ ] Module to handle IO from user
   - [ ] Symbols (need the most readable): ‹› <> ❲❳ [] ⟨⟩ () {}
   - [ ] Borders: └┘┼─┴├┤┬┌┐│
   - [ ] Bullets ?
-- [ ] Daemonize
-- [ ] Documente how Tequila process works
-- [ ] Use a config file instead of hardcoded paths
 - [X] Permit to have multiple URLs for a course
+- [ ] Actions [0/3]
+  - [ ] Create course
+  - [ ] Add directory
+  - [ ] Link course with moodle
+- [ ] Use a config file instead of hardcoded paths
+- [ ] Daemonize
+- [ ] ncurses interface
+- [ ] Courses download
+- [ ] Daemon local srv to enable multiple types of clients (console, web, remote?)
 
 #+BEGIN_SRC :raw
-
-
 v1
 ┌─ Select course ──────────────────────────
 │ - [ ] Algorithms                  [17/19]
@@ -49,16 +53,11 @@ v2 (compact)
 ┼──── Selected document informations ──────
 │ [^X] Shortcut #1  [^Y] Shortcut #2
 ┴──────────────────────────────────────────
-
 #+END_SRC
 
 ** Future?
-- ncurses interface
-- Courses download
 - Tags/Annotations on files
 - Agenda/TODOs
 - Ease backups and archiving
 - Go all out and integrate Moodle/IS-Academia/EPFLCampus/...
-- RSS reader
 - PDF reader with annotations / fast
-- Daemon local srv to enable multiple types of clients (console, web, remote?)
