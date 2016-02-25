@@ -2,9 +2,9 @@ from epflmanager.commands.common import *
 
 class Courses(object):
     @staticmethod
-    def run(args):
+    def run(args,manager):
         courses = latest_semester().courses()
-        print("All courses for this semester: ")
+        manager.print("All courses for this semester: ")
 
         for c in courses:
-            print("- %s" % (c.name))
+            manager.print("- %s" % (c.name))

@@ -2,13 +2,12 @@ import os
 import sys
 import logging
 
-logger = logging.getLogger(__name__)
+from epflmanager.io import *
+
+Logger = logging.getLogger(__name__)
 
 EPFL_DIR = "/Users/cranium/Documents/EPFL/"
 SEMESTER_VALID_DIRS = ["BA", "MA"]
-
-if sys.version_info.major == 2:
-    input = raw_input
 
 class Path(object):
     def __new__(cls, parent):
@@ -131,22 +130,19 @@ def courses(semester=None):
 
     return [ c for c in dirs_in(semester) ]
 
-def fuzzy_match(to_match, model, key=lambda x: x, case_insensitive=True):
+def fuzzy_match(to_match, model, case_insensitive=True):
     """ Return True iff the to_match "fuzzy matches" the model.
     Not so fuzzy for the moment """
-
     lower = lambda x: x.lower() if case_insensitive else lambda x: x
 
-    return lower(key(model)).startswith(lower(to_match))
+    return lower(model).startswith(lower(to_match))
 
-class NoChoiceException(Exception): pass
-class EmptyFileException(Exception): pass
-
-def site_file_handler(content):
+def site_file_reader(content):
     import re
-   # Accepted inputs examples
+    # Accepted inputs examples
     # 1) http://example.com Label of the site
     # 2) http://example.com
+    # TODO Use a regex to match a link?
     regex = re.compile("^\s*(?P<url>\S+)\s*(?P<label>(?<=\s)\S*)?\s*$")
 
     sites = []
@@ -160,50 +156,4 @@ def site_file_handler(content):
         sites.append((url,label))
 
     logger.debug("Found sites %s." % str(sites))
-    if len(sites) == 0:
-        raise EmptyFileException("No site found in the file")
-    elif len(sites) == 1:
-        return sites[0]
-    else:
-        return handle_ambiguity(sites, display_func=lambda x: "%s (%s)" % (x[1].ljust(12),x[0]))
-
-
-def choose_from_choices(choices, display_func=str, can_quit=True):
-    choices_dict = { str(i): choice for i,choice in enumerate(choices,start=1) }
-    while(True):
-        for i,choice in sorted(choices_dict.items()):
-            print("[{i}] {choice}".format(i=i, choice=display_func(choice)))
-        if can_quit:
-            print("[q] Quit")
-
-        selection = input("Choice: ")
-        if selection in choices_dict:
-            return choices_dict[selection]
-        elif can_quit and selection == "q":
-            logger.debug("User chose to quit")
-            raise NoChoiceException('User quitted')
-        else: # Invalid selection
-            print("Invalid selection. Please select a valid one.")
-
-def handle_ambiguity(possible_choices, display_func=str, display_failure=True):
-    def display_if_enabled(s):
-        if display_failure:
-            print(s)
-        else:
-            logger.info(s)
-
-    logger.debug('Possible choices: %s' % ', '.join(map(display_func, possible_choices)))
-
-    if len(possible_choices) == 0:
-        display_if_enabled("No choice found")
-        raise NoChoiceException("No choice found")
-    elif len(possible_choices) == 1:
-        return possible_choices[0]
-    else:
-        try:
-            #display_if_enabled("Ambiguous choices: %s" % (", ".join(map(display_func, possible_choices))))
-            display_if_enabled("Multiple choices:")
-            return choose_from_choices(possible_choices, display_func=display_func)
-        except NoChoiceException:
-            logger.info('User did not choose anything')
-            raise
+    return sites
