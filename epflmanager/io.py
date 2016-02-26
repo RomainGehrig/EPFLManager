@@ -1,5 +1,6 @@
 import sys
 import logging
+import readline
 
 logger = logging.getLogger(__name__)
 
@@ -25,9 +26,10 @@ class ConsoleManager(IOManager):
         self.error =   sys.stderr if error   is None else error
 
     def input(self, text):
-        self.reader.flush()
-        self.print(text, end="", flush=True)
-        return self.reader.readline()[:-1]
+        return input(text)
+        # self.reader.flush()
+        # self.print(text, end="", flush=True)
+        # return self.reader.readline()[:-1]
 
     def print(self, *args, **kwargs):
         kwargs.update(file=self.printer)
