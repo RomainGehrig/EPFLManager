@@ -1,60 +1,60 @@
 * EPFLManager
-** LocalFileManager
-** [CourseProvider]
-** ResourceOpener
+- LocalFileManager
+- [CourseProvider]
+- ResourceOpener
 
 * CourseProvider
 Moodle is the primary target of this class, but it could be interesting to add other sites like moodlearchive / epfl-help, and divers student sites
-** [Course]
-** AuthProtocol
+- [Course]
+- AuthProtocol
 
 * AuthProtocol
-** Authenticate
-** IsLogged
-** urlOpener
+- Authenticate
+- IsLogged
+- urlOpener
 
 * Course
 Main abstraction, permits the comparison between local resources and resources available in the course provider
-** [Resource]
-** LocalDir
-** Synchronize
+- [Resource]
+- LocalDir
+- Synchronize
 
 * LocalFileManager
 Abstraction of the local filesystem (permits to move/rename a course seamlessly for the Course class).
 Must be heavily customizable via a configuration file, must handle symlinks
-** (Create/Rename)Course
-** GetCourse
-** ArchiveCourse
+- (Create/Rename)Course
+- GetCourse
+- ArchiveCourse
 
 * ResourceOpener
 Edit / open local resources
-** Open (ResourceURL)
+- Open (ResourceURL)
 
 * Resource
-** Open / Download
-** Source URL
-** Local URL
-** Annotate (locally, or for everybody)
-** Status (set automatically or manually)
-*** To download
-*** Downloaded
-*** To read
-*** Partially read
-*** Read
-*** To rehearse (Phase 1,2,3,4,5: based on the forgetting curve)
-*** Archived
+- Open / Download
+- Source URL
+- Local URL
+- Annotate (locally, or for everybody)
+- Status (set automatically or manually)
+  - To download
+  - Downloaded
+  - To read
+  - Partially read
+  - Read
+  - To rehearse (Phase 1,2,3,4,5: based on the forgetting curve)
+  - Archived
 
 * CourseProviderResourceType
 All possible type of resources that a provider has, used to search for different kind of resources
-** Moodle types
-*** Exercises
-*** Solutions to exercises
-*** Books / additional resources
-*** Course lectures
-*** Past years material
-**** Old exams
-**** Solutions to old exams
-** Student made types
-*** Cheatsheet
-*** Summary
-*** Additional exercises
+- Moodle types
+  - Exercises
+  - Solutions to exercises
+  - Books / additional resources
+  - Course lectures
+  - Past years material
+    - Old exams
+    - Solutions to old exams
+- Student made types
+  - Cheatsheet
+  - Summary
+  - Additional exercises

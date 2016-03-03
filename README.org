@@ -1,7 +1,7 @@
 * EPFLManager
 Add commands to ease the day-to-day operations at EPFL
 
-** TODOs [1/9]
+** TODOs [1/11]
 - [ ] Moodle [0/3]
   - [ ] Register courses in local directory (= establish a correspondance between local and remote)
   - [ ] Download material from Moodle
@@ -14,6 +14,12 @@ Add commands to ease the day-to-day operations at EPFL
   - [ ] Borders: └┘┼─┴├┤┬┌┐│
   - [ ] Bullets ?
 - [X] Permit to have multiple URLs for a course
+- [ ] Architecture [0/2]
+  - [ ] Put functions that use/read filesystem in a mockable interface
+  - [ ] Better interface for commands creation
+- [ ] Tests [0/2]
+  - [ ] Site.url reader
+  - [ ] Mocking IO
 - [ ] Actions [0/3]
   - [ ] Create course
   - [ ] Add directory
