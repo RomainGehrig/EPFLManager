@@ -4,7 +4,7 @@ import logging
 
 from epflmanager.io import *
 
-Logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 EPFL_DIR = "/Users/cranium/Documents/EPFL/"
 SEMESTER_VALID_DIRS = ["BA", "MA"]

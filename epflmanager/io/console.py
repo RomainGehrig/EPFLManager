@@ -4,13 +4,12 @@ import readline
 
 import epflmanager.components as components
 
-
 logger = logging.getLogger(__name__)
 
 class NoChoiceException(Exception): pass
 class UserQuitException(Exception): pass
 
-class IOManager(object):
+class UserIO(object):
     def print(self, *args, **kwargs):
         raise NotImplemented('Must implement a print function')
     def info(self, txt):
@@ -20,7 +19,7 @@ class IOManager(object):
     def error(self, txt):
         self.print(txt)
 
-class ConsoleManager(IOManager, components.Component):
+class ConsoleManager(UserIO, components.Component):
     """ Class to handle the IO of the console user """
     def __init__(self, printer=None, reader=None, error=None):
         # TODO test if they can be used (instance of TextIOWrapper?)
@@ -34,6 +33,11 @@ class ConsoleManager(IOManager, components.Component):
         # self.reader.flush()
         # self.print(text, end="", flush=True)
         # return self.reader.readline()[:-1]
+
+    def password(self, text="Password: "):
+        import getpass
+
+        return getpass.getpass(prompt=text)
 
     def print(self, *args, **kwargs):
         kwargs.update(file=self.printer)
