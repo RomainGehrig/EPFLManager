@@ -143,7 +143,7 @@ def site_file_reader(content):
     # 1) http://example.com Label of the site
     # 2) http://example.com
     # TODO Use a regex to match a link?
-    regex = re.compile("^\s*(?P<url>\S+)\s*(?P<label>(?<=\s)\S*)?\s*$")
+    regex = re.compile("^\s*(?P<url>\S+)\s*(?P<label>(?<=\s).+)?(?<=\S)\s*$")
 
     sites = []
     for line in content.splitlines():
@@ -152,7 +152,8 @@ def site_file_reader(content):
             continue
 
         url = m.groupdict().get('url')
-        label = m.groupdict().get('label','Default')
+        label = m.groupdict().get('label')
+        label = label if label is not None else "Default"
         sites.append((url,label))
 
     logger.debug("Found sites %s." % str(sites))
