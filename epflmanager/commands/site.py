@@ -1,12 +1,14 @@
+import epflmanager.components as components
 from epflmanager.commands.common import *
 
 SITE_FILENAME = "site.url"
 
 class Site(object):
     @staticmethod
-    def run(args,manager):
+    def run(args):
         s = latest_semester()
         course_name = args.course
+        manager = components.get("Console")
         try:
             course = manager.choose_from(
                 s.filter_courses(lambda c: fuzzy_match(course_name, c.name)),

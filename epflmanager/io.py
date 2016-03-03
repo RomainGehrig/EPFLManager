@@ -2,6 +2,9 @@ import sys
 import logging
 import readline
 
+import epflmanager.components as components
+
+
 logger = logging.getLogger(__name__)
 
 class NoChoiceException(Exception): pass
@@ -17,13 +20,14 @@ class IOManager(object):
     def error(self, txt):
         self.print(txt)
 
-class ConsoleManager(IOManager):
+class ConsoleManager(IOManager, components.Component):
     """ Class to handle the IO of the console user """
     def __init__(self, printer=None, reader=None, error=None):
         # TODO test if they can be used (instance of TextIOWrapper?)
         self.printer = sys.stdout if printer is None else printer
         self.reader =  sys.stdin  if reader  is None else reader
         self.error =   sys.stderr if error   is None else error
+        super(ConsoleManager, self).__init__("Console")
 
     def input(self, text):
         return input(text)

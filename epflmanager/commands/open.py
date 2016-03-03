@@ -1,13 +1,15 @@
 import os
 
+import epflmanager.components as components
 from epflmanager.commands.site import Site
 from epflmanager.commands.common import *
 
 class Open(object):
     @staticmethod
-    def run(args,manager):
+    def run(args):
+        manager = components.get("Console")
         if args.target == "site":
-            Site.run(args,manager)
+            Site.run(args)
         elif args.target == "dir" or args.target == "d":
             s = latest_semester()
             course_name = args.course
