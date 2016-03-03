@@ -1,12 +1,14 @@
 import epflmanager.components as components
-from epflmanager.commands.common import *
+from epflmanager.commands.common import fuzzy_match, site_file_reader, sys_open
+from epflmanager.io.fileorganizer import *
+from epflmanager.io.console import *
 
 SITE_FILENAME = "site.url"
 
 class Site(object):
     @staticmethod
     def run(args):
-        s = latest_semester()
+        s = components.get("CourseHandler").latest_semester()
         course_name = args.course
         console = components.get("Console")
         try:

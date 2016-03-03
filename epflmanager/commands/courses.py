@@ -4,7 +4,7 @@ from epflmanager.commands.common import *
 class Courses(object):
     @staticmethod
     def run(args):
-        courses = latest_semester().courses()
+        courses = components.get("CourseHandler").latest_semester().courses()
         console = components.get("Console")
         console.print("All courses for this semester: ")
 

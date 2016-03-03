@@ -1,5 +1,8 @@
 """ Components management inspired by the Deluge implementation """
 
+import logging
+logger = logging.getLogger(__name__)
+
 class Component(object):
     def __init__(self, name):
         self._component_name = name
@@ -10,6 +13,7 @@ class ComponentRegistry(object):
         self.components = {}
 
     def register(self, component):
+        logger.info("Component %s initialized." % component._component_name)
         name = component._component_name
         if name in self.components:
             raise Error("Component already registered as %s" % name)

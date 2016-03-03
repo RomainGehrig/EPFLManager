@@ -6,9 +6,16 @@ from epflmanager.commands.site import Site
 from epflmanager.commands.horaire import Horaire
 from epflmanager.commands.courses import Courses
 from epflmanager.commands.open import Open
-from epflmanager.io import ConsoleManager
+from epflmanager.io import ConsoleManager, CourseHandler
+import epflmanager.config as config
+
+EPFL_DIR = "/Users/cranium/Documents/EPFL/"
+SEMESTER_VALID_DIRS = ["BA", "MA"]
 
 ConsoleManager() # Create the console component
+CourseHandler()  # Create the file&directory handler
+config.add("EPFL_DIR", EPFL_DIR)
+config.add("SEMESTER_VALID_DIRS", SEMESTER_VALID_DIRS)
 
 parser = argparse.ArgumentParser(description='Manage EPFL courses')
 
