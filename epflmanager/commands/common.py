@@ -71,14 +71,14 @@ class File(Path):
         with open(self.fullpath(), "r") as f:
             return f.read()
 
-class Course(Directory):
+class CourseDir(Directory):
     def __str__(self):
         return self.name
 
 class Semester(Directory):
     @Path.memoize("courses")
     def courses(self):
-        return list(map(Course(self), filter(is_course_dir, dirs_in(self.fullpath()))))
+        return list(map(CourseDir(self), filter(is_course_dir, dirs_in(self.fullpath()))))
 
     def filter_courses(self, key=lambda x: x):
         return [c for c in self.courses() if key(c)]
@@ -120,7 +120,7 @@ def semesters():
     return [ Semester(EPFL_DIR)(d) for d in dirs_in(EPFL_DIR) if is_semester_dir(d) ]
 
 def latest_semester():
-    # As semesters returns full paths, it may be usefull to sort only on
+    # As semesters returns full paths, it may be useful to sort only on
     # the last dir instead of the full path
     return sorted(semesters(), key=lambda s: s.name, reverse=True)[0]
 
