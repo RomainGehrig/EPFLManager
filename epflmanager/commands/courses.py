@@ -9,3 +9,8 @@ class Courses(object):
         console.print("All courses for this semester: ")
         for c in args.semester.courses():
             console.print("- %s" % (c.name))
+
+    @staticmethod
+    def add(args):
+        ch = components.get("CourseHandler")
+        ch.add_course(semester=args.semester)

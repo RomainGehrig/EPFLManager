@@ -44,6 +44,12 @@ horaire.set_defaults(func=Horaire.run)
 courses = subparsers.add_parser("courses", aliases=["c"])
 courses.set_defaults(func=Courses.run)
 
+action_subparsers = courses.add_subparsers(help='action help')
+show_parser = action_subparsers.add_parser("show")
+
+add_parser = action_subparsers.add_parser("add")
+add_parser.set_defaults(func=Courses.add)
+
 parser.set_defaults(func=Courses.run)
 
 try:

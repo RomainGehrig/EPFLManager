@@ -104,6 +104,33 @@ class CourseHandler(components.Component):
         logger.info("Creating directory %s" % path)
         os.mkdir(path)
         return True
+
+    def add_course(self, semester=None):
+        # Possible ways to add a course:
+        # - Inexisting directory
+        # - Existing directory but not in the right place
+        # - Choose format ? (camel, ...)
+        if semester is None:
+            semester = self.latest_semester()
+
+        console = components.get("Console")
+        config = components.get("Config")
+        semester_dir = semester.fullpath()
+
+        course_name = console.input("Name of the course: ")
+        directory = console.input("Semester directory [%s]: " % semester_dir, default=semester_dir)
+
+        course_directory = os.path.join(directory, course_name)
+
+        if self.create_directory_if_not_exists(directory):
+            if os.path.exists(course_directory):
+                console.error("Path %s already exists" % course_directory)
+                return False
+
+            if not self.create_directory_if_not_exists(course_directory):
+                pass
+
+
 class Path(object):
     def __new__(cls, parent):
         def set_name(name, *args, **kwargs):
