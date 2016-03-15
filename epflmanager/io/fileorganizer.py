@@ -54,6 +54,56 @@ class CourseHandler(components.Component):
             semester = self.latest_semester()
         return [ c for c in self.dirs_in(semester) ]
 
+    def create_directories_if_not_exists(self, path,
+                                         directory_creation_confirm=True,
+                                         parent_creation_confirm=True,
+                                         dont_create_parent=False):
+        """ Create a directory and its parent (if needed/wanted)
+        Return a boolean indicating if, in the end, the wanted directory exists
+        Raise OSError if there is a problem while creating some directory """
+
+        # Existing directory
+        if os.path.exists(path) and os.path.isdir(path):
+            return True
+
+        console = components.get("Console")
+
+        # Also handles the case where path doesn't have an ending slash (backslash on Windows)
+        parent = os.path.dirname(os.path.abspath(path))
+
+        if not os.path.exists(parent) and dont_create_parent:
+            console.warn("The parent directory %s does not exist. Cannot create %s" % (parent, path))
+            return False
+
+        # Parent creation, a bit different to the self.create_directory_if_not_exists, not so invoked here
+        if not os.path.exists(parent):
+            # Ask user if ok to create the parent
+            if parent_creation_confirm and not console.confirm("Create parent directory %s" % parent):
+                console.warn("Parent directory %s was not created. Cannot create %s." % (parent, path))
+                return False
+
+            # User accepted (or was not asked) to create the parent
+            os.mkdirs(parent)
+
+        return self.create_directory(path, directory_creation_confirm)
+
+    def create_directory_if_not_exists(self, path, directory_creation_confirm=True):
+        """ Create a directory if it doesn't exist
+        Returns a boolean indicating if, in the end, the directory exists
+        Raise OSError if there is a problem while creating the directory """
+        console = components.get("Console")
+
+        if os.path.exists(path):
+            logger.info("%s exists and is %s directory." % (path, "a" if os.path.isdir(path) else "not a"))
+            return os.path.isdir(path)
+
+        if directory_creation_confirm and not console.confirm("Create directory %s" % path):
+            logger.warn("Directory %s was not created." % path)
+            return False
+
+        logger.info("Creating directory %s" % path)
+        os.mkdir(path)
+        return True
 class Path(object):
     def __new__(cls, parent):
         def set_name(name, *args, **kwargs):
