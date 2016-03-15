@@ -11,7 +11,7 @@ class Open(object):
         if args.target == "site":
             Site.run(args)
         elif args.target == "dir" or args.target == "d":
-            s = components.get("CourseHandler").latest_semester()
+            s = args.semester
             course_name = args.course
             course = console.choose_from(
                 s.filter_courses(lambda c: fuzzy_match(course_name, c, key=lambda c_: c_.name)), display_func=lambda s: s.name)

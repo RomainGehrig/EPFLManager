@@ -20,7 +20,13 @@ config = Config() # Initialize the configuration
 config.add("EPFL_DIR", EPFL_DIR)
 config.add("SEMESTER_VALID_DIRS", SEMESTER_VALID_DIRS)
 
+# Check ref https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.add_argument
 parser = argparse.ArgumentParser(description='Manage EPFL courses')
+parser.add_argument("--semester"
+                    , action='store'
+                    , default=components.get("CourseHandler").latest_semester()
+                    , type=components.get("CourseHandler").get_semester
+                    , nargs="?")
 
 subparsers = parser.add_subparsers()
 site_parser = subparsers.add_parser("site", aliases=["s"])
@@ -35,7 +41,7 @@ open_parser.set_defaults(func=Open.run)
 horaire = subparsers.add_parser("horaire", aliases=["h"])
 horaire.set_defaults(func=Horaire.run)
 
-courses = subparsers.add_parser("courses")
+courses = subparsers.add_parser("courses", aliases=["c"])
 courses.set_defaults(func=Courses.run)
 
 parser.set_defaults(func=Courses.run)

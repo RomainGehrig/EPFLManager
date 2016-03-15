@@ -8,7 +8,7 @@ SITE_FILENAME = "site.url"
 class Site(object):
     @staticmethod
     def run(args):
-        s = components.get("CourseHandler").latest_semester()
+        s = args.semester
         course_name = args.course
         console = components.get("Console")
         try:
