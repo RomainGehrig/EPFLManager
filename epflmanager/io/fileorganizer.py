@@ -52,7 +52,7 @@ class CourseHandler(components.Component):
     def courses(self, semester=None):
         if semester is None:
             semester = self.latest_semester()
-            return [ c for c in self.dirs_in(semester) ]
+        return [ c for c in self.dirs_in(semester) ]
 
 class Path(object):
     def __new__(cls, parent):
