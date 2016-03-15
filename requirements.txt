@@ -1,2 +1,1 @@
-npyscreen
-drawille
+
