@@ -6,7 +6,6 @@ from epflmanager.commands.site import Site
 from epflmanager.commands.horaire import Horaire
 from epflmanager.commands.courses import Courses
 from epflmanager.commands.open import Open
-import epflmanager.config as config
 from epflmanager.io import ConsoleManager, CourseHandler, SemesterNotFound
 from epflmanager.config import Config
 import epflmanager.components as components
@@ -14,8 +13,10 @@ import epflmanager.components as components
 EPFL_DIR = "/Users/cranium/Documents/EPFL/"
 SEMESTER_VALID_DIRS = ["BA", "MA"]
 
-ConsoleManager() # Create the console component
-CourseHandler()  # Create the file&directory handler
+ConsoleManager()  # Create the console component
+CourseHandler()   # Create the file&directory handler
+config = Config() # Initialize the configuration
+
 config.add("EPFL_DIR", EPFL_DIR)
 config.add("SEMESTER_VALID_DIRS", SEMESTER_VALID_DIRS)
 
