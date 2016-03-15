@@ -39,6 +39,30 @@ class ConsoleManager(components.Component):
         # self.print(text, end="", flush=True)
         # return self.reader.readline()[:-1]
 
+    def confirm(self, question, default=True):
+        """ Ask for a simple Y/N question """
+        possible_answers = { 'y': True, 'yes': True,
+                             'n': False, 'no': False }
+
+        # Add the information about defaulting options at the end of the question
+        default_info = ""
+        if isinstance(default, bool):
+            default_info = "Y/n" if default else "y/N"
+        else:
+            default_info = "y/n"
+        question = question + (" [%s]: " % default_info)
+
+        answer = None
+        while not isinstance(answer,bool):
+            answer = self.input(question, default=default)
+            if isinstance(answer,str) and answer.lower() in possible_answers:
+                answer = possible_answers[answer.lower()]
+
+            if not isinstance(answer,bool):
+                self.warn("Please answer Y/N.")
+
+        return answer
+
     def password(self, text="Password: "):
         import getpass
 
