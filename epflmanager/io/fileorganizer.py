@@ -28,7 +28,7 @@ class CourseHandler(components.Component):
 
     def files_in(self, p, hidden=False):
         """ Return only the files in the specified path (only filename)
-        Return hidden files if hidden is set to True """
+        Return hidden files if hidden is set to True. """
         return [f for f in os.listdir(p) if os.path.isfile(os.path.join(p,f)) and f.startswith(".") <= hidden]
 
     def semesters(self):
@@ -72,14 +72,14 @@ class CourseHandler(components.Component):
         parent = os.path.dirname(os.path.abspath(path))
 
         if not os.path.exists(parent) and dont_create_parent:
-            console.warn("The parent directory %s does not exist. Cannot create %s" % (parent, path))
+            logger.warn("The parent directory %s does not exist. Cannot create %s" % (parent, path))
             return False
 
         # Parent creation, a bit different to the self.create_directory_if_not_exists, not so invoked here
         if not os.path.exists(parent):
             # Ask user if ok to create the parent
             if parent_creation_confirm and not console.confirm("Create parent directory %s" % parent):
-                console.warn("Parent directory %s was not created. Cannot create %s." % (parent, path))
+                logger.warn("Parent directory %s was not created. Cannot create %s." % (parent, path))
                 return False
 
             # User accepted (or was not asked) to create the parent
@@ -91,11 +91,12 @@ class CourseHandler(components.Component):
         """ Create a directory if it doesn't exist
         Returns a boolean indicating if, in the end, the directory exists
         Raise OSError if there is a problem while creating the directory """
-        console = components.get("Console")
 
         if os.path.exists(path):
             logger.info("%s exists and is %s directory." % (path, "a" if os.path.isdir(path) else "not a"))
             return os.path.isdir(path)
+
+        console = components.get("Console")
 
         if directory_creation_confirm and not console.confirm("Create directory %s" % path):
             logger.warn("Directory %s was not created." % path)
@@ -122,13 +123,20 @@ class CourseHandler(components.Component):
 
         course_directory = os.path.join(directory, course_name)
 
-        if self.create_directory_if_not_exists(directory):
-            if os.path.exists(course_directory):
-                console.error("Path %s already exists" % course_directory)
-                return False
+        # The parent dir does not exist
+        if not self.create_directory_if_not_exists(directory):
+            return False
 
-            if not self.create_directory_if_not_exists(course_directory):
-                pass
+        if os.path.exists(course_directory):
+            console.warn("Path %s already exists" % course_directory)
+            return False
+
+        if not self.create_directory_if_not_exists(course_directory):
+            console.warn("Directory %s does not exist. Aborting" % course_directory)
+            return False
+
+        # Directory was created
+        return True
 
 
 class Path(object):
