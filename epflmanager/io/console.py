@@ -9,27 +9,32 @@ logger = logging.getLogger(__name__)
 class NoChoiceException(Exception): pass
 class UserQuitException(Exception): pass
 
-class UserIO(object):
-    def print(self, *args, **kwargs):
-        raise NotImplemented('Must implement a print function')
-    def info(self, txt):
-        self.print(txt)
-    def warn(self, txt):
-        self.print(txt)
-    def error(self, txt):
-        self.print(txt)
-
-class ConsoleManager(UserIO, components.Component):
+class ConsoleManager(components.Component):
     """ Class to handle the IO of the console user """
     def __init__(self, printer=None, reader=None, error=None):
         # TODO test if they can be used (instance of TextIOWrapper?)
         self.printer = sys.stdout if printer is None else printer
         self.reader =  sys.stdin  if reader  is None else reader
-        self.error =   sys.stderr if error   is None else error
+        self._error =  sys.stderr if error   is None else error
         super(ConsoleManager, self).__init__("Console")
 
-    def input(self, text):
-        return input(text)
+    def error(self, txt):
+        self.print(txt, file=self._error)
+
+    def warn(self, txt):
+        self.print(txt)
+
+    def info(self, txt):
+        self.print(txt)
+
+    def input(self, text, default=None):
+        """ Ask the user for an input
+            Can specify a default if only whitespace is entered"""
+        inp = input(text)
+        if default is not None and not inp.strip():
+            inp = default
+
+        return inp
         # self.reader.flush()
         # self.print(text, end="", flush=True)
         # return self.reader.readline()[:-1]
