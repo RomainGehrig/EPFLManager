@@ -6,8 +6,10 @@ from epflmanager.commands.site import Site
 from epflmanager.commands.horaire import Horaire
 from epflmanager.commands.courses import Courses
 from epflmanager.commands.open import Open
-from epflmanager.io import ConsoleManager, CourseHandler
 import epflmanager.config as config
+from epflmanager.io import ConsoleManager, CourseHandler, SemesterNotFound
+from epflmanager.config import Config
+import epflmanager.components as components
 
 EPFL_DIR = "/Users/cranium/Documents/EPFL/"
 SEMESTER_VALID_DIRS = ["BA", "MA"]
@@ -37,5 +39,8 @@ courses.set_defaults(func=Courses.run)
 
 parser.set_defaults(func=Courses.run)
 
-args = parser.parse_args()
-args.func(args)
+try:
+    args = parser.parse_args()
+    args.func(args)
+except SemesterNotFound:
+    components.get("Console").error("Semester not found")

@@ -5,6 +5,8 @@ import epflmanager.components as components
 
 logger = logging.getLogger(__name__)
 
+class SemesterNotFound(Exception): pass
+
 class CourseHandler(components.Component):
     def __init__(self):
         super(CourseHandler, self).__init__("CourseHandler")
@@ -33,6 +35,14 @@ class CourseHandler(components.Component):
         """ Returns all semesters """
         EPFL_DIR = components.get("Config").get("EPFL_DIR")
         return [ Semester(EPFL_DIR)(d) for d in self.dirs_in(EPFL_DIR) if self.is_semester_dir(d) ]
+
+    def get_semester(self, name):
+        semester = None
+        for s in self.semesters():
+            if name == s.name:
+                return s
+        else: # semester not found
+            raise SemesterNotFound("No semester named %s found" % name)
 
     def latest_semester(self):
         # As semesters returns full paths, it may be useful to sort only on

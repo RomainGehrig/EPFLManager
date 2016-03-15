@@ -1,2 +1,2 @@
 from .console import ConsoleManager
-from .fileorganizer import CourseHandler
+from .fileorganizer import CourseHandler, SemesterNotFound
