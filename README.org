@@ -1,2 +1,39 @@
 * EPFLManager
 Add commands to ease the day-to-day operations at EPFL
+
+* Installation
+To be completed when work on the configuration options is done
+(Requires Python 3)
+
+* `site.url` file
+A file `site.url` can be put in the directory of a course, enabling the opening of the course site by command line.
+
+A valid file follows this format: each line begins with an url. If it is followed by a space, everything following this space will be considered to be the label of the url. The label is striped of its leading and tailing whitespace to take less visual space.
+
+Example Algorithms/site.url:
+#+BEGIN_SRC :raw
+http://moodle.epfl.ch/course/view.php?id=13768 Moodle
+http://theory.epfl.ch/courses/algorithms/      General site
+http://theory.epfl.ch/osven/                   Ola is cool
+#+END_SRC
+
+Then `epfl o alg` (read: `epfl open algorithms`) will give:
+#+BEGIN_SRC :raw
+Possible sites for Algorithms
+[1] Moodle       (http://moodle.epfl.ch/course/view.php?id=13768)
+[2] General site (http://theory.epfl.ch/courses/algorithms/)
+[3] Ola is cool  (http://theory.epfl.ch/osven/)
+[q] Quit
+Choice:
+#+END_SRC
+
+* Already implemented
+- Open configured URLs of course
+- Separation of the courses by semester
+- Display your current schedule
+- Create a new course directory
+- Run the commands for a previous semester course
+
+* Implementing
+- Configuration file
+- Moodle connection & synchronization
