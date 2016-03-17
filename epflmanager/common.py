@@ -5,6 +5,10 @@ from epflmanager.io import *
 
 logger = logging.getLogger(__name__)
 
+def config_initializer(func):
+    def intersept_args(args):
+        pass
+
 def sys_open(arg):
     # TODO: security
     if arg:

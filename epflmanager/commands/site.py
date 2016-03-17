@@ -1,5 +1,5 @@
 import epflmanager.components as components
-from epflmanager.commands.common import fuzzy_match, site_file_reader, sys_open
+from epflmanager.common import fuzzy_match, site_file_reader, sys_open
 from epflmanager.io.fileorganizer import *
 from epflmanager.io.console import *
 

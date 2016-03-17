@@ -2,7 +2,7 @@ import os
 
 import epflmanager.components as components
 from epflmanager.commands.site import Site
-from epflmanager.commands.common import *
+from epflmanager.common import *
 
 class Open(object):
     @staticmethod

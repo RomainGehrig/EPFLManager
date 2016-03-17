@@ -1,4 +1,4 @@
-from epflmanager.commands.common import *
+from epflmanager.common import *
 
 import epflmanager.components as components
 

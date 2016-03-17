@@ -1,5 +1,5 @@
 import epflmanager.components as components
-from epflmanager.commands.common import *
+from epflmanager.common import *
 
 class Courses(object):
     @staticmethod
