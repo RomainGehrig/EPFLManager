@@ -22,6 +22,11 @@ class ComponentRegistry(object):
     def get(self, name):
         return self.components.get(name)
 
+def as_component(obj, name):
+    """ Lift an object to be registered as a Component """
+    obj._component_name = name
+    register(obj)
+
 _ComponentRegistry = ComponentRegistry()
 
 register = _ComponentRegistry.register

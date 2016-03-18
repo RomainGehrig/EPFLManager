@@ -8,51 +8,63 @@ import epflmanager.components as components
 import epflmanager.config as config
 
 ConsoleManager()  # Create the console component
-CourseHandler()   # Create the file&directory handler
-config_ = config.Config() # Initialize the configuration
 
-EPFL_DIR = "/Users/cranium/Documents/EPFL/"
-SEMESTER_VALID_DIRS = ["BA", "MA"]
-SITE_FILENAME = "site.url"
-SCHEDULE_FILE = "horaire.png"
+def config_initializer(func):
+    def intercept_args(args): # args are those provided by argparser
+        conf_file = args.config if args.config else config.default_config_file()
+        conf = config.read_config_file(conf_file)
+        components.as_component(conf, "Config") # Configuration initialization
+        CourseHandler() # Create the file&directory handler
 
-config_.add("EPFL_DIR", EPFL_DIR)
-config_.add("SEMESTER_VALID_DIRS", SEMESTER_VALID_DIRS)
-config_.add("SITE_FILENAME", SITE_FILENAME)
-config_.add("SCHEDULE_FILE", SCHEDULE_FILE)
+        args.semester = find_semester(args.semester)
+
+        return func(args)
+
+    return intercept_args
+
+wrap = config_initializer
+
+
+def find_semester(semester_name):
+    ch = components.get("CourseHandler")
+    if semester_name is not None:
+        return ch.get_semester(semester_name)
+    else:
+        return ch.latest_semester()
+
 
 # Check ref https://docs.python.org/3/library/argparse.html#argparse.ArgumentParser.add_argument
 parser = argparse.ArgumentParser(description='Manage EPFL courses')
 parser.add_argument("--config"
                     , action='store'
-                    , default=config.read_config_files(config.possible_config_files())
-                    , type=config.read_config_files
+                    , default=None
+                    , type=str
                     , nargs="?")
 parser.add_argument("--semester"
                     , action='store'
-                    , default=components.get("CourseHandler").latest_semester
-                    , type=lambda s: lambda: components.get("CourseHandler").get_semester(s)
+                    , default=None
+                    , type=str
                     , nargs="?")
 
 subparsers = parser.add_subparsers()
 open_parser = subparsers.add_parser("open", aliases=["o"])
 open_parser.add_argument("course")
 open_parser.add_argument("target", default="site", nargs="?")
-open_parser.set_defaults(func=CourseCommands.go_to_url)
+open_parser.set_defaults(func=wrap(CourseCommands.go_to_url))
 
 horaire = subparsers.add_parser("schedule", aliases=["s"])
-horaire.set_defaults(func=Schedule.show)
+horaire.set_defaults(func=wrap(Schedule.show))
 
 courses = subparsers.add_parser("courses", aliases=["c"])
-courses.set_defaults(func=CourseCommands.listing)
+courses.set_defaults(func=wrap(CourseCommands.listing))
 
 action_subparsers = courses.add_subparsers(help='action help')
 show_parser = action_subparsers.add_parser("show")
 
 add_parser = action_subparsers.add_parser("add")
-add_parser.set_defaults(func=CourseCommands.add)
+add_parser.set_defaults(func=wrap(CourseCommands.add))
 
-parser.set_defaults(func=CourseCommands.listing)
+parser.set_defaults(func=wrap(CourseCommands.listing))
 
 try:
     args = parser.parse_args()

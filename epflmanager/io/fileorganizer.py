@@ -19,8 +19,8 @@ class CourseHandler(components.Component):
     def is_semester_dir(self, d):
         """ Decide if a directory can be a semester directory
         Need the directory's name only, not full path """
-        SEMESTER_VALID_DIRS = components.get("Config").get("SEMESTER_VALID_DIRS")
-        return any(map(lambda sd: d.startswith(sd), SEMESTER_VALID_DIRS))
+        semester_directories = components.get("Config").getlist("directories","semester_directories")
+        return d in semester_directories
 
     def dirs_in(self, p):
         """ Return only the directories in the specified path (only dirname) """
@@ -33,8 +33,8 @@ class CourseHandler(components.Component):
 
     def semesters(self):
         """ Returns all semesters """
-        EPFL_DIR = components.get("Config").get("EPFL_DIR")
-        return [ Semester(EPFL_DIR)(d) for d in self.dirs_in(EPFL_DIR) if self.is_semester_dir(d) ]
+        main_dir = components.get("Config")["directories"]["main_dir"]
+        return [ Semester(main_dir)(d) for d in self.dirs_in(main_dir) if self.is_semester_dir(d) ]
 
     def get_semester(self, name):
         semester = None
