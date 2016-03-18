@@ -44,10 +44,15 @@ class CourseHandler(components.Component):
         else: # semester not found
             raise SemesterNotFound("No semester named %s found" % name)
 
+    def sorted_semesters(self):
+        """ Returns a sorted list of the semesters, the order is given by the
+        `semester_directories` key in the configuration """
+        semester_directories = components.get("Config").getlist("directories","semester_directories")
+        semester_with_order = { name: value for value,name in enumerate(semester_directories) }
+        return sorted(self.semesters(), key=lambda s: semester_with_value(s.name))
+
     def latest_semester(self):
-        # As semesters returns full paths, it may be useful to sort only on
-        # the last dir instead of the full path
-        return sorted(self.semesters(), key=lambda s: s.name, reverse=True)[0]
+        return self.sorted_semesters()[-1]
 
     def courses(self, semester=None):
         if semester is None:
