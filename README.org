@@ -29,7 +29,7 @@ Choice:
 #+END_SRC
 
 * Already implemented
-- Open configured URLs of course
+- Open the configured URLs of a course
 - Separation of the courses by semester
 - Display your current schedule
 - Create a new course directory

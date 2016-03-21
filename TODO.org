@@ -1,31 +1,40 @@
-* TODOs [1/10]
-- [ ] Moodle [0/3]
+* TODOs [2/11]
+- [-] Moodle [1/4]
   - [ ] Register courses in local directory (= establish a correspondance between local and remote)
   - [ ] Download material from Moodle
-  - [ ] Does a resource change id when updated ? (maybe ask a teacher)
-    - If it does it can be used to see if there is a change
+  - [ ] Set 4h for cookie expiration
+  - [X] Does a resource change id when updated ? (maybe ask a teacher)
+    - ID is different if the file is updated
     - History ?
+- [ ] Command line client [0/1]
+  - [ ] Moodle commands [0/2]
+    - [ ] Link moodle and directory
+      - Select course as argument and query moodle for possibilities
+    - [ ] Sync with moodle
+  - [ ] Resolve conficts with files
 - [-] Console GUI [1/4]
   - [X] Module to handle IO from user
   - [ ] Symbols (need the most readable): ‹› <> ❲❳ [] ⟨⟩ () {}
   - [ ] Borders: └┘┼─┴├┤┬┌┐│
   - [ ] Bullets ?
 - [X] Permit to have multiple URLs for a course
-- [ ] Architecture [0/2]
+- [-] Architecture [0/3]
   - [ ] Put functions that use/read filesystem in a mockable interface
-  - [ ] Better interface for commands creation
+  - [-] Better interface for commands creation
+  - [ ] Refactor fileorganizer.py (especially CourseHandler)
+    - CourseHandler should have a list of objects representing the courses and methods related to manipulating those, it shouldn't use directly os.path for instance
+    - A Course should be an object that may or may not have a save on disk (it could be a course only existing on Moodle, but can be save on the drive)
 - [ ] Tests [0/2]
   - [ ] Site.url reader
   - [ ] Mocking IO
-- [ ] Actions [0/3]
+- [-] Actions [1/3]
   - [ ] Create course
-  - [ ] Add directory
+  - [X] Add directory
   - [ ] Link course with moodle
-- [ ] Use a config file instead of hardcoded paths
+- [X] Use a config file instead of hardcoded paths
 - [ ] ncurses interface
 - [ ] Courses download
 - [ ] Daemon local srv to enable multiple types of clients (console, web, remote?)
-
 
 #+BEGIN_SRC :raw
 v1
@@ -59,10 +68,32 @@ v2 (compact)
 #+END_SRC
 
 * Notes
+- Moodle ids change when resource is updated:
   - Solutions to Problems: id=914285 (at <2016-03-07 Mon 13:56>, until chap 2)
   - Solutions to Problems: id=915248 (at <2016-03-14 Mon 14:38>, until chap 3)
+- Could use coroutines to create better function interactions
 
-** Future?
+* Questions
+- Where to keep meta informations about courses and moodle (id and resources downloaded)
+  - A file in the every course directory containing the resources IDs and other info (see below) seems to be best
+- What to store in moodle resources file
+  - For each semester
+    - ignored courses ID (as moodle shows courses by year)
+  - For each section
+    - ID (internal (= hash) or set by moodle)
+    - Name
+    - Local directory (full path)
+  - For each resource
+    - Resource ID
+    - Internal ID ?
+    - Download dir (not containing the name)
+    - Local resources name
+    - Local resources hash (if file renamed)
+    - Last change of id (from)
+    - Moodle section
+    - Moodle name (to resolve change of id)
+
+* Future?
 - Test filesystem with pyfakefs https://github.com/jmcgeheeiv/pyfakefs
 - Use zope for components (design by contract) http://docs.zope.org/zope.interface/ http://muthukadan.net/docs/zca.html
 - Taskwarrior for tasks management
