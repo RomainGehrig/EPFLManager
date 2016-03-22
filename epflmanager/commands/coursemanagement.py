@@ -30,7 +30,7 @@ class CourseCommands(object):
                 display_func=lambda s: s.name)
 
             url, site = console.choose_from(course.get_sites(),
-                                            msg="Possible URLs for %s" % course.name,
+                                            msg="URLs for %s" % course.name,
                                             display_func=lambda x: "%s (%s)" % (x[1].ljust(12),x[0]))
             sys_open(url)
         except NoChoiceException:

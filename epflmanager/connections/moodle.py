@@ -3,6 +3,9 @@ import os
 import pickle
 from urllib import parse
 from collections import defaultdict
+import logging
+
+logger = logging.getLogger(__name__)
 
 from pyquery import PyQuery
 

@@ -37,7 +37,7 @@ class CourseHandler(components.Component):
     def semesters(self):
         """ Returns all semesters """
         if not self._semesters:
-           self._semesters = { d.as_class(Semester): [] for d in self._main_dir.dirs() if self.can_be_semester_dir(d) }
+           self._semesters = { d.as_class(SemesterDir): [] for d in self._main_dir.dirs() if self.can_be_semester_dir(d) }
         return self._semesters.keys()
 
     def get_semester(self, name):
@@ -285,7 +285,7 @@ class CourseDir(Directory):
         urls_file = components.get("Config")["directories"]["course_urls_file"]
         return CourseDir.course_urls_parser(self.get_file(urls_file).read())
 
-class Semester(Directory):
+class SemesterDir(Directory):
     @Path.memoize("courses")
     def courses(self):
         course_handler = components.get("CourseHandler")

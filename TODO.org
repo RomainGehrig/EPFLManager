@@ -6,7 +6,8 @@
   - [X] Does a resource change id when updated ? (maybe ask a teacher)
     - ID is different if the file is updated
     - History ?
-- [ ] Command line client [0/1]
+  - [ ] What about submissions, other file types, ... ?
+- [ ] Command line client [0/2]
   - [ ] Moodle commands [0/2]
     - [ ] Link moodle and directory
       - Select course as argument and query moodle for possibilities
