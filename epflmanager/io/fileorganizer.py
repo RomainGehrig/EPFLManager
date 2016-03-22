@@ -14,7 +14,7 @@ class CourseHandler(components.Component):
     def is_course_dir(self, d):
         """ Decide if a directory can be a course directory
         Need the directory's name only, not full path """
-        return d[0].isupper()
+        return d[0] not in {"_", "."}
 
     def is_semester_dir(self, d):
         """ Decide if a directory can be a semester directory

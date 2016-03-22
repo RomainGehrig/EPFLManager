@@ -81,7 +81,7 @@ class ConsoleManager(components.Component):
 
         choices_dict = { str(i): choice for i,choice in enumerate(choices,start=1) }
         while(True):
-            if msg is not None:
+            if msg:
                 self.print(msg)
             for i,choice in sorted(choices_dict.items()):
                 self.print("[{i}] {choice}".format(i=i, choice=display_func(choice)))

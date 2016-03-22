@@ -42,10 +42,11 @@ class Moodle(object):
             cookies.clear_expired_cookies()
 
         if cookies is None or not self._important_cookies.issubset(set(cookies.get_dict().keys())):
+            logger.info("Outdated or no cookies, need to reauthenticate")
             console.info("Outdated or no cookies, need to reauthenticate")
-            self.authenticate()
+            self.authentication_process()
         else:
-            console.info("Good cookies, no need to reauthenticate")
+            logger.info("Good cookies, no need to reauthenticate")
             self._session.cookies = cookies
 
     def save_cookies(self, cookies):
@@ -63,7 +64,7 @@ class Moodle(object):
         except FileNotFoundError:
             pass
 
-    def authenticate(self):
+    def authentication_process(self):
         loginUrl = self._main_url + "/login/"
         authUrl = self._main_url + "/auth/tequila"
         teqUrl = "https://tequila.epfl.ch/cgi-bin/tequila/login?requestkey=%s"
