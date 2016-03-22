@@ -62,7 +62,7 @@ class CourseHandler(components.Component):
             semester = self.latest_semester()
 
         if not self._semesters.get(semester, []):
-            courses = [ c.as_class(CourseDir) for c in semester.courses ]
+            courses = [ c.as_class(CourseDir) for c in semester.courses() ]
             self._semesters[semester] = courses
 
         return self._semesters[semester]
@@ -160,13 +160,16 @@ class Path(object):
 
 class Directory(Path):
     """ Represent a directory in the filesystem """
-    def read_file(self, filename):
-        f = self.get_file(filename)
-        return f.read() if f is not None else None
+    def read_file(self, filename, raiseException=False):
+        f = self.get_file(filename, raiseException=raiseException)
+        return f.read() if f is not None else ""
 
-    def get_file(self, filename):
+    def get_file(self, filename, raiseException=False):
         files = list(filter(lambda f: f.name == filename, self.files()))
-        return files[0] if len(files) != 0 else None
+        f = files[0] if len(files) != 0 else None
+        if f is None and raiseException:
+            raise FileNotFoundError("File %s was not found. Directory: %s" % (filename, self.fullpath()))
+        return f
 
     def as_class(self, cls):
         return cls(self.parent)(self.name)
@@ -252,6 +255,12 @@ class CourseDir(Directory):
     def __str__(self):
         return self.name
 
+    def course_urls(self):
+        """ Find the file containing the urls of interests for this course
+            and return the parsed results """
+        urls_file = components.get("Config")["directories"]["course_urls_file"]
+        return CourseDir.course_urls_parser(self.read_file(urls_file))
+
     @staticmethod
     def course_urls_parser(content):
         """ Parse the content given and returns a list of tuples (url,website) """
@@ -279,11 +288,6 @@ class CourseDir(Directory):
         logger.debug("Found sites %s." % str(sites))
         return sites
 
-    def get_sites(self):
-        """ Find the file containing the urls of interests for this course
-            and return the parsed results """
-        urls_file = components.get("Config")["directories"]["course_urls_file"]
-        return CourseDir.course_urls_parser(self.get_file(urls_file).read())
 
 class SemesterDir(Directory):
     @Path.memoize("courses")

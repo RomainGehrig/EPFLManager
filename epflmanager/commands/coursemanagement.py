@@ -29,7 +29,7 @@ class CourseCommands(object):
                 msg="What course do you want?",
                 display_func=lambda s: s.name)
 
-            url, site = console.choose_from(course.get_sites(),
+            url, site = console.choose_from(course.course_urls(),
                                             msg="URLs for %s" % course.name,
                                             display_func=lambda x: "%s (%s)" % (x[1].ljust(12),x[0]))
             sys_open(url)
