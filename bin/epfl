@@ -24,7 +24,6 @@ def config_initializer(func):
 
 wrap = config_initializer
 
-
 def find_semester(semester_name):
     ch = components.get("CourseHandler")
     if semester_name is not None:
@@ -59,7 +58,7 @@ courses = subparsers.add_parser("courses", aliases=["c"])
 courses.set_defaults(func=wrap(CourseCommands.listing))
 
 action_subparsers = courses.add_subparsers(help='action help')
-show_parser = action_subparsers.add_parser("show")
+show_parser = action_subparsers.add_parser("list")
 
 add_parser = action_subparsers.add_parser("add")
 add_parser.set_defaults(func=wrap(CourseCommands.add))
