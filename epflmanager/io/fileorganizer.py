@@ -9,32 +9,35 @@ class SemesterNotFound(Exception): pass
 
 class CourseHandler(components.Component):
     def __init__(self):
+        config = components.get("Config")
+        self._semester_directories = config["directories"].getlist("semester_directories")
+        parent, name = Path.split_parent(config["directories"]["main_dir"])
+        self._main_dir = Directory(parent)(name)
+
+        # Cache
+        self._semesters = []
+
         super(CourseHandler, self).__init__("CourseHandler")
 
-    def is_course_dir(self, d):
+    def can_be_course_dir(self, d):
         """ Decide if a directory can be a course directory
         Need the directory's name only, not full path """
+        if isinstance(d, Path):
+            d = d.name
         return d[0] not in {"_", "."}
 
-    def is_semester_dir(self, d):
+    def can_be_semester_dir(self, d):
         """ Decide if a directory can be a semester directory
         Need the directory's name only, not full path """
-        semester_directories = components.get("Config")["directories"].getlist("semester_directories")
-        return d in semester_directories
-
-    def dirs_in(self, p):
-        """ Return only the directories in the specified path (only dirname) """
-        return [d for d in os.listdir(p) if os.path.isdir(os.path.join(p,d))]
-
-    def files_in(self, p, hidden=False):
-        """ Return only the files in the specified path (only filename)
-        Return hidden files if hidden is set to True. """
-        return [f for f in os.listdir(p) if os.path.isfile(os.path.join(p,f)) and f.startswith(".") <= hidden]
+        if isinstance(d, Path):
+            d = d.name
+        return d in self._semester_directories
 
     def semesters(self):
         """ Returns all semesters """
-        main_dir = components.get("Config")["directories"]["main_dir"]
-        return [ Semester(main_dir)(d) for d in self.dirs_in(main_dir) if self.is_semester_dir(d) ]
+        if not self._semesters:
+           self._semesters = [ d.as_class(Semester) for d in self._main_dir.dirs() if self.can_be_semester_dir(d) ]
+        return self._semesters
 
     def get_semester(self, name):
         semester = None
@@ -47,8 +50,7 @@ class CourseHandler(components.Component):
     def sorted_semesters(self):
         """ Returns a sorted list of the semesters, the order is given by the
         `semester_directories` key in the configuration """
-        semester_directories = components.get("Config")["directories"].getlist("semester_directories")
-        semester_with_order = { name: value for value,name in enumerate(semester_directories) }
+        semester_with_order = { name: value for value,name in enumerate(self._semester_directories) }
         return sorted(self.semesters(), key=lambda s: semester_with_order[s.name])
 
     def latest_semester(self):
@@ -57,7 +59,7 @@ class CourseHandler(components.Component):
     def courses(self, semester=None):
         if semester is None:
             semester = self.latest_semester()
-        return [ c for c in self.dirs_in(semester) ]
+        return [ c for c in semester.courses ]
 
     def add_course(self, semester=None):
         # Possible ways to add a course:
@@ -131,6 +133,16 @@ class Path(object):
         self._cache = {}
 
     @staticmethod
+    def split_parent(path):
+        basename = os.path.basename(path)
+        if not basename:
+            path = os.path.dirname(path)
+            basename = os.path.basename(path)
+
+        parent = os.path.dirname(path)
+        return (parent, basename)
+
+    @staticmethod
     def memoize(attr_name):
         def inner_mem(func):
             def inner_func(self, *args, **kwargs):
@@ -149,15 +161,27 @@ class Directory(Path):
         files = list(filter(lambda f: f.name == filename, self.files()))
         return files[0] if len(files) != 0 else None
 
+    def as_class(self, cls):
+        return cls(self.parent)(self.name)
+
+    def _names_of_dirs(self):
+        """ Return the directories in the current path (only dirname) """
+        p = self.fullpath()
+        return [d for d in os.listdir(p) if os.path.isdir(os.path.join(p,d))]
+
+    def _names_of_files(self, hidden=False):
+        """ Return the files in the specified path (only filename)
+        Return hidden files if hidden is set to True. """
+        p = self.fullpath()
+        return [f for f in os.listdir(p) if os.path.isfile(os.path.join(p,f)) and f.startswith(".") <= hidden]
+
     @Path.memoize("dirs")
     def dirs(self):
-        ch = components.get("CourseHandler")
-        return list(map(Directory(self), ch.dirs_in(self.fullpath())))
+        return list(map(Directory(self), self._names_of_dirs()))
 
     @Path.memoize("files")
     def files(self):
-        ch = components.get("CourseHandler")
-        return list(map(File(self), ch.files_in(self.fullpath())))
+        return list(map(File(self), self._names_of_files()))
 
     def create_directories_if_not_exists(self, path,
                                          directory_creation_confirm=True,
@@ -224,9 +248,8 @@ class Semester(Directory):
     @Path.memoize("courses")
     def courses(self):
         course_handler = components.get("CourseHandler")
-        return list(map(CourseDir(self),
-                        filter(course_handler.is_course_dir,
-                               course_handler.dirs_in(self.fullpath()))))
+        return list(map(lambda c: c.as_class(CourseDir)
+                       , filter(course_handler.can_be_course_dir, self.dirs())))
 
     def filter_courses(self, key=lambda x: x):
         return [c for c in self.courses() if key(c)]
