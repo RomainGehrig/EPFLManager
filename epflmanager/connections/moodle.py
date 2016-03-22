@@ -21,9 +21,9 @@ class Moodle(object):
         config = components.get("Config")
 
         self._cookies = None # we don't directly use the session.cookies to load/save cookies
-        self._cookie_file = config.get("moodle","cookie_file")
-        self._main_url = config.get("moodle","main_url")
-        self._course_url = config.get("moodle","course_url")
+        self._cookie_file = config["moodle"]["cookie_file"]
+        self._main_url = config["moodle"]["main_url"]
+        self._course_url = config["moodle"]["course_url"]
         self._session = requests.session()
 
         self._important_cookies = {'MoodleSession', 'TequilaPHP', 'tequila_key', 'tequila_user'}

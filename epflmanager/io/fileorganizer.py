@@ -19,7 +19,7 @@ class CourseHandler(components.Component):
     def is_semester_dir(self, d):
         """ Decide if a directory can be a semester directory
         Need the directory's name only, not full path """
-        semester_directories = components.get("Config").getlist("directories","semester_directories")
+        semester_directories = components.get("Config")["directories"].getlist("semester_directories")
         return d in semester_directories
 
     def dirs_in(self, p):
@@ -47,9 +47,9 @@ class CourseHandler(components.Component):
     def sorted_semesters(self):
         """ Returns a sorted list of the semesters, the order is given by the
         `semester_directories` key in the configuration """
-        semester_directories = components.get("Config").getlist("directories","semester_directories")
+        semester_directories = components.get("Config")["directories"].getlist("semester_directories")
         semester_with_order = { name: value for value,name in enumerate(semester_directories) }
-        return sorted(self.semesters(), key=lambda s: semester_with_value(s.name))
+        return sorted(self.semesters(), key=lambda s: semester_with_order[s.name])
 
     def latest_semester(self):
         return self.sorted_semesters()[-1]
@@ -120,7 +120,6 @@ class CourseHandler(components.Component):
             semester = self.latest_semester()
 
         console = components.get("Console")
-        config = components.get("Config")
         semester_dir = semester.fullpath()
 
         course_name = console.input("Name of the course: ")
