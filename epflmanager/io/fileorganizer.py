@@ -59,6 +59,106 @@ class CourseHandler(components.Component):
             semester = self.latest_semester()
         return [ c for c in self.dirs_in(semester) ]
 
+    def add_course(self, semester=None):
+        # Possible ways to add a course:
+        # - Inexisting directory
+        # - Existing directory but not in the right place
+        # - Choose format ? (camel, ...)
+        if semester is None:
+            semester = self.latest_semester()
+
+        console = components.get("Console")
+        semester_dir = semester.fullpath()
+
+        course_name = console.input("Name of the course: ")
+        directory = console.input("Semester directory [%s]: " % semester_dir, default=semester_dir)
+
+        course_directory = os.path.join(directory, course_name)
+
+        # The parent dir does not exist
+        if not semester.create_directory_if_not_exists(directory):
+            return False
+
+        if os.path.exists(course_directory):
+            console.warn("Path %s already exists" % course_directory)
+            return False
+
+        if not semester.create_directory_if_not_exists(course_directory):
+            console.warn("Directory %s does not exist. Aborting" % course_directory)
+            return False
+
+        # Directory was created
+        return True
+
+
+class Path(object):
+    def __new__(cls, parent):
+        def set_name(name, *args, **kwargs):
+            obj = object.__new__(cls)
+            obj.__init__(parent, name, *args, **kwargs)
+            return obj
+
+        return set_name
+
+    def __init__(self, parent, name):
+        if isinstance(parent, File):
+            raise Exception("A path cannot have a file parent")
+
+        self._cache = {}
+        self.parent = parent
+        self.name = name
+
+    def __str__(self):
+        return "%s: %s" % (self.__class__.__name__, self.name)
+
+    def __repr__(self):
+        return "<" + str(self) + ">"
+
+    def exists(self):
+        return os.path.exists(self.fullpath())
+
+    def is_file(self):
+        return os.path.isfile(self.fullpath())
+
+    def is_dir(self):
+        return os.path.isdir(self.fullpath())
+
+    def fullpath(self):
+        parent_path = self.parent.fullpath() if isinstance(self.parent, Path) else self.parent
+        return os.path.join(parent_path, self.name)
+
+    def clear_cache(self):
+        self._cache = {}
+
+    @staticmethod
+    def memoize(attr_name):
+        def inner_mem(func):
+            def inner_func(self, *args, **kwargs):
+                if attr_name not in self._cache:
+                    self._cache[attr_name] = func(self,*args,**kwargs)
+                return self._cache[attr_name]
+            return inner_func
+        return inner_mem
+
+class Directory(Path):
+    def read_file(self, filename):
+        f = self.get_file(filename)
+        return f.read() if f is not None else None
+
+    def get_file(self, filename):
+        files = list(filter(lambda f: f.name == filename, self.files()))
+        return files[0] if len(files) != 0 else None
+
+    @Path.memoize("dirs")
+    def dirs(self):
+        ch = components.get("CourseHandler")
+        return list(map(Directory(self), ch.dirs_in(self.fullpath())))
+
+    @Path.memoize("files")
+    def files(self):
+        ch = components.get("CourseHandler")
+        return list(map(File(self), ch.files_in(self.fullpath())))
+
     def create_directories_if_not_exists(self, path,
                                          directory_creation_confirm=True,
                                          parent_creation_confirm=True,
@@ -110,97 +210,6 @@ class CourseHandler(components.Component):
         logger.info("Creating directory %s" % path)
         os.mkdir(path)
         return True
-
-    def add_course(self, semester=None):
-        # Possible ways to add a course:
-        # - Inexisting directory
-        # - Existing directory but not in the right place
-        # - Choose format ? (camel, ...)
-        if semester is None:
-            semester = self.latest_semester()
-
-        console = components.get("Console")
-        semester_dir = semester.fullpath()
-
-        course_name = console.input("Name of the course: ")
-        directory = console.input("Semester directory [%s]: " % semester_dir, default=semester_dir)
-
-        course_directory = os.path.join(directory, course_name)
-
-        # The parent dir does not exist
-        if not self.create_directory_if_not_exists(directory):
-            return False
-
-        if os.path.exists(course_directory):
-            console.warn("Path %s already exists" % course_directory)
-            return False
-
-        if not self.create_directory_if_not_exists(course_directory):
-            console.warn("Directory %s does not exist. Aborting" % course_directory)
-            return False
-
-        # Directory was created
-        return True
-
-
-class Path(object):
-    def __new__(cls, parent):
-        def set_name(name, *args, **kwargs):
-            obj = object.__new__(cls)
-            obj.__init__(parent, name, *args, **kwargs)
-            return obj
-
-        return set_name
-
-    def __init__(self, parent, name):
-        if isinstance(parent, File):
-            raise Exception("A path cannot have a file parent")
-
-        self._cache = {}
-        self.parent = parent
-        self.name = name
-
-    def __str__(self):
-        return "%s: %s" % (self.__class__.__name__, self.name)
-
-    def __repr__(self):
-        return "<" + str(self) + ">"
-
-    def fullpath(self):
-        parent_path = self.parent.fullpath() if isinstance(self.parent, Path) else self.parent
-        return os.path.join(parent_path, self.name)
-
-    def clear_cache(self):
-        self._cache = {}
-
-    @staticmethod
-    def memoize(attr_name):
-        def inner_mem(func):
-            def inner_func(self, *args, **kwargs):
-                if attr_name not in self._cache:
-                    self._cache[attr_name] = func(self,*args,**kwargs)
-                return self._cache[attr_name]
-            return inner_func
-        return inner_mem
-
-class Directory(Path):
-    def read_file(self, filename):
-        f = self.get_file(filename)
-        return f.read() if f is not None else None
-
-    def get_file(self, filename):
-        files = list(filter(lambda f: f.name == filename, self.files()))
-        return files[0] if len(files) != 0 else None
-
-    @Path.memoize("dirs")
-    def dirs(self):
-        ch = components.get("CourseHandler")
-        return list(map(Directory(self), ch.dirs_in(self.fullpath())))
-
-    @Path.memoize("files")
-    def files(self):
-        ch = components.get("CourseHandler")
-        return list(map(File(self), ch.files_in(self.fullpath())))
 
 class File(Path):
     def read(self):
