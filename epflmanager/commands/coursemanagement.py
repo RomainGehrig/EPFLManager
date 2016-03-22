@@ -22,7 +22,6 @@ class CourseCommands(object):
         s = args.semester
         course_name = args.course
         console = components.get("Console")
-        urls_file = components.get("Config")["directories"]["course_urls_file"]
 
         try:
             course = console.choose_from(
@@ -30,8 +29,8 @@ class CourseCommands(object):
                 msg="What course do you want?",
                 display_func=lambda s: s.name)
 
-            url, site = console.choose_from(site_file_reader(course.read_file(urls_file)),
-                                            msg="Possible sites for %s" % course.name,
+            url, site = console.choose_from(course.get_sites(),
+                                            msg="Possible URLs for %s" % course.name,
                                             display_func=lambda x: "%s (%s)" % (x[1].ljust(12),x[0]))
             sys_open(url)
         except NoChoiceException:

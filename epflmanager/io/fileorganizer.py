@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 class SemesterNotFound(Exception): pass
 
 class CourseHandler(components.Component):
+    """ Abstract the different directories that are used as semesters/courses """
     def __init__(self):
         config = components.get("Config")
         self._semester_directories = config["directories"].getlist("semester_directories")
@@ -15,7 +16,7 @@ class CourseHandler(components.Component):
         self._main_dir = Directory(parent)(name)
 
         # Cache
-        self._semesters = []
+        self._semesters = {} # map from semester to courses
 
         super(CourseHandler, self).__init__("CourseHandler")
 
@@ -36,13 +37,13 @@ class CourseHandler(components.Component):
     def semesters(self):
         """ Returns all semesters """
         if not self._semesters:
-           self._semesters = [ d.as_class(Semester) for d in self._main_dir.dirs() if self.can_be_semester_dir(d) ]
-        return self._semesters
+           self._semesters = { d.as_class(Semester): [] for d in self._main_dir.dirs() if self.can_be_semester_dir(d) }
+        return self._semesters.keys()
 
     def get_semester(self, name):
         semester = None
         for s in self.semesters():
-            if name == s.name:
+            if s.name == name:
                 return s
         else: # semester not found
             raise SemesterNotFound("No semester named %s found" % name)
@@ -59,7 +60,12 @@ class CourseHandler(components.Component):
     def courses(self, semester=None):
         if semester is None:
             semester = self.latest_semester()
-        return [ c for c in semester.courses ]
+
+        if not self._semesters.get(semester, []):
+            courses = [ c.as_class(CourseDir) for c in semester.courses ]
+            self._semesters[semester] = courses
+
+        return self._semesters[semester]
 
     def add_course(self, semester=None):
         # Possible ways to add a course:
@@ -92,8 +98,8 @@ class CourseHandler(components.Component):
         # Directory was created
         return True
 
-
 class Path(object):
+    """ Represents an abstract path in a filesystem """
     def __new__(cls, parent):
         def set_name(name, *args, **kwargs):
             obj = object.__new__(cls)
@@ -153,6 +159,7 @@ class Path(object):
         return inner_mem
 
 class Directory(Path):
+    """ Represent a directory in the filesystem """
     def read_file(self, filename):
         f = self.get_file(filename)
         return f.read() if f is not None else None
@@ -236,6 +243,7 @@ class Directory(Path):
         return True
 
 class File(Path):
+    """ Represent a file in the filesystem """
     def read(self):
         with open(self.fullpath(), "r") as f:
             return f.read()
@@ -243,6 +251,39 @@ class File(Path):
 class CourseDir(Directory):
     def __str__(self):
         return self.name
+
+    @staticmethod
+    def course_urls_parser(content):
+        """ Parse the content given and returns a list of tuples (url,website) """
+        import re
+        # Accepted inputs examples
+        # 1) http://example.com Label of the site
+        # 2) http://example.com
+        # TODO Use a regex to match a link?
+        regex = re.compile("^\s*(?P<url>\S+)\s*(?P<label>(?<=\s).+)?(?<=\S)\s*$")
+
+        sites = []
+        for line in content.splitlines():
+            m = regex.match(line)
+            if m is None: # ignore invalid lines
+                line = line.strip()
+                if line:
+                    logger.warn("Invalid non-empty line was found while parsing the course urls. Line: \"%s\"" % line)
+                continue
+
+            url = m.groupdict().get('url')
+            label = m.groupdict().get('label')
+            label = label if label is not None else "Default"
+            sites.append((url,label))
+
+        logger.debug("Found sites %s." % str(sites))
+        return sites
+
+    def get_sites(self):
+        """ Find the file containing the urls of interests for this course
+            and return the parsed results """
+        urls_file = components.get("Config")["directories"]["course_urls_file"]
+        return CourseDir.course_urls_parser(self.get_file(urls_file).read())
 
 class Semester(Directory):
     @Path.memoize("courses")
