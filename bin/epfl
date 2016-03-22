@@ -3,7 +3,8 @@ import logging
 logging.basicConfig(level=logging.WARN)
 
 from epflmanager.commands import CourseCommands, Schedule
-from epflmanager.io import ConsoleManager, CourseHandler, SemesterNotFound
+from epflmanager.io import ConsoleManager
+from epflmanager.coursehandler import CourseHandler, SemesterNotFound
 import epflmanager.components as components
 import epflmanager.config as config
 

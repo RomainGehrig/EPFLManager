@@ -1,6 +1,5 @@
 import epflmanager.components as components
 from epflmanager.common import *
-from epflmanager.io.fileorganizer import *
 from epflmanager.io.console import *
 
 class CourseCommands(object):
