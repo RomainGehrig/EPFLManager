@@ -61,6 +61,10 @@ courses.set_defaults(func=wrap(CourseCommands.listing))
 action_subparsers = courses.add_subparsers(help='action help')
 show_parser = action_subparsers.add_parser("list")
 
+link_parser = action_subparsers.add_parser("link")
+link_parser.add_argument("course", default="", nargs="?")
+link_parser.set_defaults(func=wrap(CourseCommands.link))
+
 add_parser = action_subparsers.add_parser("add")
 add_parser.set_defaults(func=wrap(CourseCommands.add))
 

@@ -22,6 +22,7 @@
 - [-] Architecture [0/3]
   - [ ] Put functions that use/read filesystem in a mockable interface
   - [-] Better interface for commands creation
+  - [ ] Refactor the fuzzy course chooser in coursemanagement
   - [ ] Refactor fileorganizer.py (especially CourseHandler)
     - CourseHandler should have a list of objects representing the courses and methods related to manipulating those, it shouldn't use directly os.path for instance
     - A Course should be an object that may or may not have a save on disk (it could be a course only existing on Moodle, but can be save on the drive)

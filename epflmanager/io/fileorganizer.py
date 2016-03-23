@@ -2,8 +2,13 @@ import os
 import logging
 
 import epflmanager.components as components
+import epflmanager.parsers as parsers
 
 logger = logging.getLogger(__name__)
+
+class MoodleFileNotFound(FileNotFoundError): pass
+class CourseURLsFileNotFound(FileNotFoundError): pass
+class CourseNotLinkedWithMoodle(Exception): pass
 
 class Path(object):
     """ Represents an abstract path in a filesystem """
@@ -68,17 +73,16 @@ class Path(object):
 class Directory(Path):
     """ Represent a directory in the filesystem """
     def read_file(self, filename, raiseException=False):
-        f = self.get_file(filename, raiseException=raiseException)
-        return f.read() if f is not None else ""
-
-    def get_file(self, filename, raiseException=False):
-        files = list(filter(lambda f: f.name == filename, self.files()))
-        f = files[0] if len(files) != 0 else None
-        if f is None and raiseException:
-            raise FileNotFoundError("File %s was not found. Directory: %s" % (filename, self.fullpath()))
-        return f
+        path = os.path.join(self.fullpath(), filename)
+        try:
+            with open(path, "r") as f:
+                return f.read()
+        except FileNotFoundError:
+            if raiseException:
+                raise
 
     def as_class(self, cls):
+        """ Enable to "cast" the directory to other classes like SemesterDir/CourseDir """
         return cls(self.parent)(self.name)
 
     def _names_of_dirs(self):
@@ -152,49 +156,67 @@ class Directory(Path):
         os.mkdir(path)
         return True
 
-class File(Path):
-    """ Represent a file in the filesystem """
-    def read(self):
-        with open(self.fullpath(), "r") as f:
-            return f.read()
+class File(Path): pass
+#    """ Represent a file in the filesystem. """
+#    def read(self):
+#        with open(self.fullpath(), "r") as f:
+#            return f.read()
 
 class CourseDir(Directory):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     def __str__(self):
         return self.name
+
+    @property
+    def moodle_filename(self):
+        return components.get("Config")["directories"]["moodle_config_file"].format(course_name=self.name)
+
+    @property
+    def moodle_file_path(self):
+        return os.path.join(self.fullpath(), self.moodle_filename)
+
+    @property
+    def course_urls_filename(self):
+        return components.get("Config")["directories"]["course_urls_file"]
+
+    @property
+    def course_urls_file_path(self):
+        return os.path.join(self.fullpath(), self.course_urls_filename)
+
+    @property
+    def is_linked_with_moodle(self):
+        ch = components.get("CourseHandler")
+        try:
+            ch.moodle_id_for_course(self)
+            return True
+        except CourseNotLinkedWithMoodle:
+            return False
+
+    def read_moodle_config(self):
+        try:
+            return parsers.moodle_file_parser(self.read_file(self.moodle_filename, raiseException=True))
+        except FileNotFoundError as e:
+            strerr = e.args[0]
+            raise MoodleFileNotFound(strerr)
+
+    def link_with_moodle(self, moodle_id):
+        ch = components.get("CourseHandler")
+        ch.link_course_with_moodle(self, moodle_id)
+
+    def write_moodle_config(self, config):
+        with open(self.moodle_file_path, "w") as f:
+            config.write(f)
 
     def course_urls(self):
         """ Find the file containing the urls of interests for this course
             and return the parsed results """
-        urls_file = components.get("Config")["directories"]["course_urls_file"]
-        return CourseDir.course_urls_parser(self.read_file(urls_file))
-
-    @staticmethod
-    def course_urls_parser(content):
-        """ Parse the content given and returns a list of tuples (url,website) """
-        import re
-        # Accepted inputs examples
-        # 1) http://example.com Label of the site
-        # 2) http://example.com
-        # TODO Use a regex to match a link?
-        regex = re.compile("^\s*(?P<url>\S+)\s*(?P<label>(?<=\s).+)?(?<=\S)\s*$")
-
-        sites = []
-        for line in content.splitlines():
-            m = regex.match(line)
-            if m is None: # ignore invalid lines
-                line = line.strip()
-                if line:
-                    logger.warn("Invalid non-empty line was found while parsing the course urls. Line: \"%s\"" % line)
-                continue
-
-            url = m.groupdict().get('url')
-            label = m.groupdict().get('label')
-            label = label if label is not None else "Default"
-            sites.append((url,label))
-
-        logger.debug("Found sites %s." % str(sites))
-        return sites
-
+        try:
+            return parsers.course_urls_parser(self.read_file(self.course_urls_filename, raiseException=True))
+        except FileNotFoundError as e:
+            strerr = e.args[0]
+            raise CourseURLsFileNotFound(strerr)
 
 class SemesterDir(Directory):
     @Path.memoize("courses")

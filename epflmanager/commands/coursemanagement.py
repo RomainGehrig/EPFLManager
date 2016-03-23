@@ -6,15 +6,34 @@ class CourseCommands(object):
     @staticmethod
     def listing(args):
         console = components.get("Console")
-
+        adjustement = 20
         console.print("All courses for this semester: ")
+        console.print("%s   %s" % ("Course:".ljust(adjustement), "Linked with Moodle:"))
         for c in args.semester.courses():
-            console.print("- %s" % (c.name))
+            console.print("- %s %s" % (c.name.ljust(adjustement), "[x]" if c.is_linked_with_moodle else ""))
 
     @staticmethod
     def add(args):
         ch = components.get("CourseHandler")
         ch.add_course(semester=args.semester)
+
+    @staticmethod
+    def link(args):
+        console = components.get("Console")
+        course_name = args.course
+        s = args.semester
+        try:
+            course = console.choose_from(
+                s.filter_courses(lambda c: fuzzy_match(course_name, c.name) and not c.is_linked_with_moodle),
+                msg="What course do you want?",
+                display_func=lambda s: s.name)
+            moodle_id = console.input("What is the moodle id of %s ? " % course.name)
+            course.link_with_moodle(moodle_id)
+            console.info("Course linked!")
+        except NoChoiceException:
+            pass
+        except UserQuitException:
+            pass
 
     @staticmethod
     def go_to_url(args):

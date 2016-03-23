@@ -16,7 +16,7 @@ class ConsoleManager(components.Component):
         self.printer = sys.stdout if printer is None else printer
         self.reader =  sys.stdin  if reader  is None else reader
         self._error =  sys.stderr if error   is None else error
-        super(ConsoleManager, self).__init__("Console")
+        super().__init__("Console")
 
     def error(self, txt):
         self.print(txt, file=self._error)
