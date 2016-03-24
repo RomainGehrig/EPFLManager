@@ -21,9 +21,6 @@ class Path(object):
         return set_name
 
     def __init__(self, parent, name):
-        if isinstance(parent, File):
-            raise Exception("A path cannot have a file parent")
-
         self._cache = {}
         self.parent = parent
         self.name = name
@@ -100,9 +97,9 @@ class Directory(Path):
     def dirs(self):
         return list(map(Directory(self), self._names_of_dirs()))
 
-    @Path.memoize("files")
-    def files(self):
-        return list(map(File(self), self._names_of_files()))
+#    @Path.memoize("files")
+#    def files(self):
+#        return list(map(File(self), self._names_of_files()))
 
     def create_directories_if_not_exists(self, path,
                                          directory_creation_confirm=True,
@@ -156,13 +153,20 @@ class Directory(Path):
         os.mkdir(path)
         return True
 
-class File(Path): pass
+#class File(Path): pass
 #    """ Represent a file in the filesystem. """
 #    def read(self):
 #        with open(self.fullpath(), "r") as f:
 #            return f.read()
 
 class CourseDir(Directory):
+    """
+    A CourseDir is a directory with a little bit more to it: as it "knows"
+    it has the content of a certain course, it can provide different functions
+    to query its content. However, while it knows it has some kind of important
+    files, it doesn't know how to interprete/parse them so it must query the
+    CourseHandler to obtain such information.
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -189,8 +193,7 @@ class CourseDir(Directory):
     def is_linked_with_moodle(self):
         ch = components.get("CourseHandler")
         try:
-            ch.moodle_id_for_course(self)
-            return True
+            return ch.moodle_id_for_course(self) is not None
         except CourseNotLinkedWithMoodle:
             return False
 
