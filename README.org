@@ -1,4 +1,4 @@
-[[file:https://travis-ci.org/RomainGehrig/EPFLManager.svg?branch=master][Travis build]]
+[[https://travis-ci.org/RomainGehrig/EPFLManager][https://travis-ci.org/RomainGehrig/EPFLManager.svg?branch=master]]
 
 * EPFLManager
 Add commands to ease the day-to-day operations at EPFL
