@@ -1,3 +1,5 @@
+[[file:https://travis-ci.org/RomainGehrig/EPFLManager.svg?branch=master][Travis build]]
+
 * EPFLManager
 Add commands to ease the day-to-day operations at EPFL
 
@@ -34,7 +36,9 @@ Choice:
 - Display your current schedule
 - Create a new course directory
 - Run the commands for a previous semester course
+- The configuration file is read and used
+- Possibility to link a course directory with a Moodle id
 
 * Implementing
-- Configuration file
 - Moodle connection & synchronization
+- Init/setup script to install and configure options
