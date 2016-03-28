@@ -31,7 +31,8 @@ class FileOrganizerTest(fakefs.TestCase):
         Normalize paths for a meaningful testing """
 
         norm_paths = [os.path.normpath(p) for p in [p1,p2]]
-        self.assertEqual(*norm_paths, *args, **kwargs)
+        all_args = norm_paths + list(args)
+        self.assertEqual(*all_args, **kwargs)
 
     def create_basic_filesystem(self):
         """ Create the following file tree:
