@@ -2,7 +2,7 @@ import logging
 from collections import OrderedDict
 
 import epflmanager.components as components
-from epflmanager.io.fileorganizer import *
+from epflmanager.io import *
 
 logger = logging.getLogger(__name__)
 
