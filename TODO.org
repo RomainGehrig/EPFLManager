@@ -1,6 +1,6 @@
 * TODOs [2/11]
-- [-] Moodle [1/4]
-  - [ ] Register courses in local directory (= establish a correspondance between local and remote)
+- [-] Moodle [2/5]
+  - [X] Register courses in local directory (= establish a correspondance between local and remote)
   - [ ] Download material from Moodle
   - [ ] Set 4h for cookie expiration
   - [X] Does a resource change id when updated ? (maybe ask a teacher)
@@ -19,20 +19,24 @@
   - [ ] Borders: └┘┼─┴├┤┬┌┐│
   - [ ] Bullets ?
 - [X] Permit to have multiple URLs for a course
-- [-] Architecture [0/3]
+- [-] Architecture [0/4]
   - [ ] Put functions that use/read filesystem in a mockable interface
   - [-] Better interface for commands creation
   - [ ] Refactor the fuzzy course chooser in coursemanagement
   - [ ] Refactor fileorganizer.py (especially CourseHandler)
     - CourseHandler should have a list of objects representing the courses and methods related to manipulating those, it shouldn't use directly os.path for instance
     - A Course should be an object that may or may not have a save on disk (it could be a course only existing on Moodle, but can be save on the drive)
-- [ ] Tests [0/2]
-  - [ ] Site.url reader
-  - [ ] Mocking IO
-- [-] Actions [1/3]
-  - [ ] Create course
+- [-] Tests [3/5]
+  - [X] Site.url reader
+  - [ ] Mocking user IO
+  - [X] Mocking filesystem IO
+  - [ ] Operations on course, in particular the different organisations users can have
+  - [X] Integrate Travis CI builds
+- [-] Actions [3/4]
+  - [X] Create course
   - [X] Add directory
-  - [ ] Link course with moodle
+  - [X] Link course with moodle
+  - [ ] Sync directory with moodle
 - [X] Use a config file instead of hardcoded paths
 - [ ] ncurses interface
 - [ ] Courses download
