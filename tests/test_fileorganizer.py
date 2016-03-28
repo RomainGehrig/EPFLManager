@@ -5,6 +5,10 @@ from functools import reduce
 import pyfakefs.fake_filesystem_unittest as fakefs
 
 from epflmanager.io.fileorganizer import Directory, Path
+import epflmanager.components as components
+
+from components import NoIOConsole
+NoIOConsole()
 
 class FileOrganizerTest(fakefs.TestCase):
 
@@ -45,10 +49,13 @@ class FileOrganizerTest(fakefs.TestCase):
              │   ├─ .hiddenFile
              │   └─ File with spaces
              ├─ Dir2
+             ├─ FileInRoot
              ├─ Dir with spaces
              │   ├─ File2
              │   └─ File2 with spaces
              └─ .hiddenDir
+
+        Return the root as a Directory for convenience
 
         """
         os.mkdir("Dir1")
@@ -61,6 +68,7 @@ class FileOrganizerTest(fakefs.TestCase):
         os.chdir("..")
 
         os.mkdir("Dir2")
+        self.fs.CreateFile("FileInRoot", contents="Some content for the file in root")
 
         os.mkdir("Dir with spaces")
         os.chdir("Dir with spaces")
@@ -69,6 +77,8 @@ class FileOrganizerTest(fakefs.TestCase):
         os.chdir("..")
 
         os.mkdir(".hiddenDir")
+
+        return Directory(self.root)(".")
 
     #========================= TESTS ON Path ==========================#
 
@@ -152,20 +162,56 @@ class FileOrganizerTest(fakefs.TestCase):
     #======================= TESTS ON Directory =======================#
 
     def test_read_file_can_read_a_file(self):
-        self.create_basic_filesystem()
+        root = self.create_basic_filesystem()
 
-        dir1 = Directory(self.root)("Dir1")
+        dir1 = Directory(root)("Dir1")
         self.assertIsNotNone(dir1.read_file("File1"))
 
     def test_read_file_fails_silently_by_default(self):
-        self.create_basic_filesystem()
+        root = self.create_basic_filesystem()
 
-        dir1 = Directory(self.root)("Dir1")
+        dir1 = Directory(root)("Dir1")
         self.assertIsNone(dir1.read_file("FileXXXX"))
 
     def test_read_file_fails_with_right_exception_if_indicated(self):
-        self.create_basic_filesystem()
+        root = self.create_basic_filesystem()
 
-        dir1 = Directory(self.root)("Dir1")
+        dir1 = Directory(root)("Dir1")
         with self.assertRaises(FileNotFoundError):
             dir1.read_file("FileXXXX", raiseException=True)
+
+    def test_create_directory_if_not_exists_returns_True_if_directory_already_exists(self):
+        root = self.create_basic_filesystem()
+        self.assertTrue(os.path.exists("Dir1") and os.path.isdir("Dir1"))
+        self.assertTrue(root.create_directory_if_not_exists("Dir1"))
+
+    def test_create_directory_if_not_exists_returns_False_if_file_exists_with_dirname(self):
+        root = self.create_basic_filesystem()
+        self.assertFalse(root.create_directory_if_not_exists("FileInRoot"))
+
+    def test_create_directory_if_not_exists_with_no_confirm_creates_dir(self):
+        root = self.create_basic_filesystem()
+        dirname = "NewDir"
+        self.assertFalse(os.path.exists(dirname))
+        self.assertTrue(root.create_directory_if_not_exists(dirname, directory_creation_confirm=False))
+        self.assertTrue(os.path.exists(dirname))
+
+    def test_create_directory_if_not_exists_with_confirm_creates_dir(self):
+        root = self.create_basic_filesystem()
+        dirname = "NewDir"
+
+        components.get("Console").patch_func("confirm", lambda question, default=None: True)
+
+        self.assertFalse(os.path.exists(dirname))
+        self.assertTrue(root.create_directory_if_not_exists(dirname))
+        self.assertTrue(os.path.exists(dirname))
+
+    def test_create_directory_if_not_exists_does_not_create_dir_if_user_doesnt_want_to(self):
+        root = self.create_basic_filesystem()
+        dirname = "NewDir"
+
+        components.get("Console").patch_func("confirm", lambda question, default=None: False)
+
+        self.assertFalse(os.path.exists(dirname))
+        self.assertFalse(root.create_directory_if_not_exists(dirname))
+        self.assertFalse(os.path.exists(dirname))
