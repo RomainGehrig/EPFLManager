@@ -38,7 +38,7 @@ def initialize_components():
 
 def setup_coursehandler():
     if not components.is_started("CourseHandler"):
-        CourseHandler()
+        NoCacheCourseHandler()
 
 def setup_console():
     if not components.is_started("Console"):
@@ -49,6 +49,15 @@ def setup_config():
         conf = get_config_parser()
         conf.read_string(config_file_content)
         start_config_component(conf)
+
+class NoCacheCourseHandler(CourseHandler):
+    """ Change CourseHandler to clear caches in entering/exiting a `with` statement """
+    def __enter__(self):
+        self._init()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        pass
 
 class NoIOConsole(components.Component):
     """ Doesn't do any IO with the user. Returns default values or dummy ones """
