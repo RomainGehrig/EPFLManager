@@ -1,4 +1,54 @@
+from unittest import mock
+
+from epflmanager.coursehandler import CourseHandler
+from epflmanager.config import get_config_parser, start_config_component
 import epflmanager.components as components
+
+config_file_content = """
+[version]
+epflmanager=0.1
+configreader=%(epflmanager)s
+
+[directories]
+main_dir=/
+# the order determines which is the current semester
+# (the last member of this list that exists on the disk)
+semester_directories=
+    ["BA1","BA2","BA3","BA4","BA5","BA6"
+    ,"MA1","MA2","MA3","MA4"]
+course_urls_file=site.url
+moodle_config_file=.moodle.{course_name}
+schedule_file=schedule.png
+
+[moodle]
+main_url=http://moodle.epfl.ch/
+course_url=%(main_url)scourse/view.php?id={course_id}
+cookie_file=moodle.cookies
+"""
+
+def override_component(component_name, cls, *args, **kwargs):
+    # TODO find a way to mock the ComponentRegistry into allowing temporary overriding
+    # Maybe something like a context manager?
+    ...
+
+def initialize_components():
+    setup_config()
+    setup_coursehandler()
+    setup_console()
+
+def setup_coursehandler():
+    if not components.is_started("CourseHandler"):
+        CourseHandler()
+
+def setup_console():
+    if not components.is_started("Console"):
+        NoIOConsole()
+
+def setup_config():
+    if not components.is_started("Config"):
+        conf = get_config_parser()
+        conf.read_string(config_file_content)
+        start_config_component(conf)
 
 class NoIOConsole(components.Component):
     """ Doesn't do any IO with the user. Returns default values or dummy ones """

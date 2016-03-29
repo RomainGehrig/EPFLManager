@@ -7,12 +7,12 @@ import pyfakefs.fake_filesystem_unittest as fakefs
 from epflmanager.io.fileorganizer import Directory, Path
 import epflmanager.components as components
 
-from components import NoIOConsole
-NoIOConsole()
+from components import setup_console
 
 class FileOrganizerTest(fakefs.TestCase):
 
     def setUp(self):
+        setup_console()
         self.setUpPyfakefs()
 
     def tearDown(self):

@@ -1,6 +1,7 @@
 import unittest
 
 from epflmanager.parsers import course_urls_parser, moodle_file_parser
+from components import setup_config
 
 class MoodleConfigParser(unittest.TestCase):
 
