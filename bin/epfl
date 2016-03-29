@@ -14,7 +14,7 @@ def config_initializer(func):
     def intercept_args(args): # args are those provided by argparser
         conf_file = args.config if args.config else config.default_config_file()
         conf = config.read_config_file(conf_file)
-        components.as_component(conf, "Config") # Configuration initialization
+        config.start_config_component(conf)
         CourseHandler() # Create the file&directory handler
 
         args.semester = find_semester(args.semester)
