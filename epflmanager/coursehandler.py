@@ -14,15 +14,19 @@ class CourseNotFound(Exception): pass
 class CourseHandler(components.Component):
     """ Abstract the different directories that are used as semesters/courses """
     def __init__(self):
+        self._init()
+        super().__init__("CourseHandler")
+
+    def _init(self):
+        """ Read Config and empty caches """
         config = components.get("Config")
         self._semester_directories = config["directories"].getlist("semester_directories")
         parent, name = Path.split_parent(config["directories"]["main_dir"])
         self._main_dir = Directory(parent)(name)
 
         # Cache
-        self._semesters = {} # map from semester to courses
-
-        super().__init__("CourseHandler")
+        self._semesters = {} # map from semester to (map from names to courses)
+        self._courses = {} # map from name to courses
 
     def can_be_course_dir(self, d):
         """ Decide if a directory can be a course directory
