@@ -65,6 +65,16 @@ class NoIOConsole(components.Component):
         super().__init__("Console")
         self._default_funcs = {}
 
+    def inputs(self, answers_to_inputs):
+        """ Helper function to set what the console should return when asked to input.
+        Iterate through the answers and sequentially return every one of them.
+        """
+        answers = iter(answers_to_inputs)
+        def new_input(txt, default=None):
+            answer = next(answers)
+            return answer if answer is not None else default
+        self.input = new_input
+
     def _save_default_funcs(self, ignores=None):
         if ignores is None:
             ignores = set()
