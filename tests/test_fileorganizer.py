@@ -200,8 +200,6 @@ class FileOrganizerTest(fakefs.TestCase):
         root = self.create_basic_filesystem()
         dirname = "NewDir"
 
-        components.get("Console").patch_func("confirm", lambda question, default=None: True)
-
         self.assertFalse(os.path.exists(dirname))
         self.assertTrue(root.create_directory_if_not_exists(dirname))
         self.assertTrue(os.path.exists(dirname))
@@ -210,8 +208,9 @@ class FileOrganizerTest(fakefs.TestCase):
         root = self.create_basic_filesystem()
         dirname = "NewDir"
 
-        components.get("Console").patch_func("confirm", lambda question, default=None: False)
+        with components.get("Console") as c:
+            c.confirm = lambda question, default=None: False
 
-        self.assertFalse(os.path.exists(dirname))
-        self.assertFalse(root.create_directory_if_not_exists(dirname))
-        self.assertFalse(os.path.exists(dirname))
+            self.assertFalse(os.path.exists(dirname))
+            self.assertFalse(root.create_directory_if_not_exists(dirname))
+            self.assertFalse(os.path.exists(dirname))
