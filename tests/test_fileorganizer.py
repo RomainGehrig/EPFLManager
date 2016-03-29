@@ -159,6 +159,13 @@ class FileOrganizerTest(fakefs.TestCase):
         expected = (parent, dirname)
         self.assertEqual(res, expected)
 
+    def test_split_parent_with_path_containing_spaces(self):
+        parent = "Dir with spaces"
+        dirname= "NormalDir"
+        res = Path.split_parent(self.create_path(self.root, parent, dirname))
+        expected = (self.create_path(self.root,parent), dirname)
+        self.assertEqual(res, expected)
+
     #======================= TESTS ON Directory =======================#
 
     def test_read_file_can_read_a_file(self):
