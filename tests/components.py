@@ -103,10 +103,13 @@ class NoIOConsole(components.Component):
         pass
 
     def input(self, text, default=None):
+        if default is None:
+            raise NotImplemented("Need to have something to answer")
+
         return default
 
     def confirm(self, question, default=True):
-        return True
+        return default
 
     def password(self, text="Password: "):
         return "password"
