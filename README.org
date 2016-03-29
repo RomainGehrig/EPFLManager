@@ -1,14 +1,15 @@
+* EPFLManager
+
 [[https://travis-ci.org/RomainGehrig/EPFLManager][https://travis-ci.org/RomainGehrig/EPFLManager.svg?branch=master]]
 
-* EPFLManager
 Add commands to ease the day-to-day operations at EPFL
 
-* Installation
+** Installation
 To be completed when work on the configuration options is done
 
 (Requires Python 3)
 
-* ~site.url~ file
+** ~site.url~ file
 A file ~site.url~ can be put in the directory of a course, enabling the opening of the course site by command line.
 
 A valid file follows this format: each line begins with an url. If it is followed by a space, everything following this space will be considered to be the label of the url. The label is striped of its leading and tailing whitespace to take less visual space.
@@ -30,7 +31,7 @@ Possible sites for Algorithms
 Choice:
 #+END_SRC
 
-* Already implemented
+** Already implemented
 - Open the configured URLs of a course
 - Separation of the courses by semester
 - Display your current schedule
@@ -39,6 +40,6 @@ Choice:
 - The configuration file is read and used
 - Possibility to link a course directory with a Moodle id
 
-* Implementing
+** Implementing
 - Moodle connection & synchronization
 - Init/setup script to install and configure options
