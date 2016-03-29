@@ -27,6 +27,12 @@ class Path(object):
     def __repr__(self):
         return "<" + str(self) + ">"
 
+    def __eq__(self, other):
+        return (type(self) is type(other) and
+            os.path.normpath(self.fullpath()) == os.path.normpath(other.fullpath()))
+    def __hash__(self):
+        return hash(os.path.normpath(self.fullpath()))
+
     def exists(self):
         return os.path.exists(self.fullpath())
 
