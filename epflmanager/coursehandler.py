@@ -30,7 +30,7 @@ class CourseHandler(components.Component):
             d = d.name
         return d[0] not in {"_", "."}
 
-    def can_be_semester_dir(self, d):
+    def is_semester_dir(self, d):
         """ Decide if a directory can be a semester directory
         Need the directory's name only, not full path """
         if isinstance(d, Path):
@@ -40,8 +40,8 @@ class CourseHandler(components.Component):
     def semesters(self):
         """ Returns all semesters """
         if not self._semesters:
-           self._semesters = { d.as_class(SemesterDir): {} for d in self._main_dir.dirs() if self.can_be_semester_dir(d) }
-        return self._semesters.keys()
+           self._semesters = { d.as_class(SemesterDir): {} for d in self._main_dir.dirs() if self.is_semester_dir(d) }
+        return list(self._semesters.keys())
 
     def get_semester(self, name):
         for s in self.semesters():
@@ -82,7 +82,7 @@ class CourseHandler(components.Component):
 
         return self._semesters[semester][course_name]
 
-    def add_course(self, semester=None):
+    def add_course(self, course_name, semester=None):
         # Possible ways to add a course:
         # - Inexisting directory
         # - Existing directory but not in the right place
@@ -90,24 +90,16 @@ class CourseHandler(components.Component):
         if semester is None:
             semester = self.latest_semester()
 
-        console = components.get("Console")
         semester_dir = semester.fullpath()
+        course_directory = os.path.join(semester_dir, course_name)
 
-        course_name = console.input("Name of the course: ")
-        directory = console.input("Semester directory [%s]: " % semester_dir, default=semester_dir)
-
-        course_directory = os.path.join(directory, course_name)
-
-        # The parent dir does not exist
-        if not semester.create_directory_if_not_exists(directory):
-            return False
-
-        if os.path.exists(course_directory):
-            console.warn("Path %s already exists" % course_directory)
+        console = components.get("Console")
+        if os.path.exists(course_directory) and not os.path.isdir(course_directory):
+            console.warn("Path %s already exists and is not a directory" % course_directory)
             return False
 
         if not semester.create_directory_if_not_exists(course_directory):
-            console.warn("Directory %s does not exist. Aborting" % course_directory)
+            console.warn("Directory %s does not exist. Aborting." % course_directory)
             return False
 
         # Directory was created

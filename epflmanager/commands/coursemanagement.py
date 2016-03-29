@@ -15,7 +15,10 @@ class CourseCommands(object):
     @staticmethod
     def add(args):
         ch = components.get("CourseHandler")
-        ch.add_course(semester=args.semester)
+        console = components.get("Console")
+        course_name = console.input("Name of the course: ")
+
+        ch.add_course(course_name, semester=args.semester)
 
     @staticmethod
     def link(args):
