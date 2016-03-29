@@ -20,7 +20,7 @@ class CourseHandler(components.Component):
     def _init(self):
         """ Read Config and empty caches """
         config = components.get("Config")
-        self._semester_directories = config["directories"].getlist("semester_directories")
+        self._semester_directories = config.getlist("directories", "semester_directories")
         parent, name = Path.split_parent(config["directories"]["main_dir"])
         self._main_dir = Directory(parent)(name)
 
