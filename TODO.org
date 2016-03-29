@@ -29,6 +29,7 @@
 - [-] Tests [3/5]
   - [X] Site.url reader
   - [ ] Mocking user IO
+  - [ ] Mock Components and ComponentRegistry by suppressing their global state
   - [X] Mocking filesystem IO
   - [ ] Operations on course, in particular the different organisations users can have
   - [X] Integrate Travis CI builds
@@ -37,10 +38,12 @@
   - [X] Add directory
   - [X] Link course with moodle
   - [ ] Sync directory with moodle
+  - [ ] Detect a course rename with the moodle file (and function glob.glob)
 - [X] Use a config file instead of hardcoded paths
 - [ ] ncurses interface
 - [ ] Courses download
 - [ ] Daemon local srv to enable multiple types of clients (console, web, remote?)
+- [ ] Install linter
 
 #+BEGIN_SRC :raw
 v1
