@@ -9,8 +9,8 @@ To be completed when work on the configuration options is done
 
 (Requires Python 3)
 
-** ~site.url~ file
-A file ~site.url~ can be put in the directory of a course, enabling the opening of the course site by command line.
+** =site.url= file
+A file =site.url= can be put in the directory of a course, enabling the opening of the course site by command line.
 
 A valid file follows this format: each line begins with an url. If it is followed by a space, everything following this space will be considered to be the label of the url. The label is striped of its leading and tailing whitespace to take less visual space.
 
@@ -30,6 +30,24 @@ Possible sites for Algorithms
 [q] Quit
 Choice:
 #+END_SRC
+
+** Configuration file
+Configuration file can be found at =~/.config/epflmanager/config.ini=. It consists of three sections: ~version~, ~directories~ and ~moodle~:
+
+~version~: Contains the versions of epflmanager and the configuration reader used to generate the configuration file. Enables migrations of configuration.
+
+~directories~:
+- ~main_dir~: the directory containing all the semesters
+- ~semester_directories~: names of the directories for every semesters, in chronological order. Used to determine the current semester.
+- ~schedule_file~: name of the file in the semester directory that contains the current semester schedule
+- ~course_urls_file~: name of the file stored in a course directory which contains the URLs of interest for this course
+- ~moodle_config_file~: name of the file containing Moodle informations/config for a particular course
+
+~moodle~:
+- ~main_url~: url pointing to the home of Moodle
+- ~course_url~: url containing the pattern to access a particular course with its Moodle id
+- ~cookie_file~: name of the file that will hold current cookies for the connection the Moodle, in order to allow reconnection if done within a certain span of time (normally 4h)
+
 
 ** Already implemented
 - Open the configured URLs of a course
