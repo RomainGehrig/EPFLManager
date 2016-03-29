@@ -127,9 +127,9 @@ class CourseHandler(components.Component):
         try:
             moodle_config = course.read_moodle_config()
             logger.debug("Moodle file for %s exists and was read." % course)
-            if not "config" in moodle_config:
-                moodle_config.add_section("config")
-            moodle_config["config"]["moodle_id"] = str(moodle_id)
+            if not "course" in moodle_config:
+                moodle_config.add_section("course")
+            moodle_config["course"]["moodle_id"] = str(moodle_id)
         except MoodleFileNotFound:
             logger.info("Creating the moodle config for the course %s" % course.name)
             moodle_config = CourseHandler.moodle_config_skeleton(course_name=course.name, moodle_id=moodle_id)
