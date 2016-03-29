@@ -1,4 +1,4 @@
-* TODOs [2/11]
+* TODOs [2/12]
 - [-] Moodle [2/5]
   - [X] Register courses in local directory (= establish a correspondance between local and remote)
   - [ ] Download material from Moodle
@@ -20,20 +20,20 @@
   - [ ] Bullets ?
 - [X] Permit to have multiple URLs for a course
 - [-] Architecture [0/4]
-  - [ ] Put functions that use/read filesystem in a mockable interface
+  - [-] Put functions that use/read filesystem in a mockable interface
   - [-] Better interface for commands creation
   - [ ] Refactor the fuzzy course chooser in coursemanagement
   - [ ] Refactor fileorganizer.py (especially CourseHandler)
     - CourseHandler should have a list of objects representing the courses and methods related to manipulating those, it shouldn't use directly os.path for instance
     - A Course should be an object that may or may not have a save on disk (it could be a course only existing on Moodle, but can be save on the drive)
-- [-] Tests [3/5]
+- [-] Tests [3/6]
   - [X] Site.url reader
-  - [ ] Mocking user IO
+  - [-] Mocking user IO
   - [ ] Mock Components and ComponentRegistry by suppressing their global state
   - [X] Mocking filesystem IO
   - [ ] Operations on course, in particular the different organisations users can have
   - [X] Integrate Travis CI builds
-- [-] Actions [3/4]
+- [-] Actions [3/5]
   - [X] Create course
   - [X] Add directory
   - [X] Link course with moodle
@@ -44,6 +44,7 @@
 - [ ] Courses download
 - [ ] Daemon local srv to enable multiple types of clients (console, web, remote?)
 - [ ] Install linter
+- [ ] Code coverage
 
 #+BEGIN_SRC :raw
 v1
