@@ -62,7 +62,10 @@ class CourseHandler(components.Component):
         return sorted(self.semesters(), key=lambda s: semester_with_order[s.name])
 
     def latest_semester(self):
-        return self.sorted_semesters()[-1]
+        sem = self.sorted_semesters()
+        if len(sem) == 0:
+            raise SemesterNotFound("No semester was found.")
+        return sem[-1]
 
     def courses(self, semester=None):
         if semester is None:
