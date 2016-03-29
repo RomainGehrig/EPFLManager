@@ -8,6 +8,8 @@ logger = logging.getLogger(__name__)
 
 class MoodleFileNotFound(FileNotFoundError): pass
 class CourseURLsFileNotFound(FileNotFoundError): pass
+
+# Should not really be here but avoid circular dependencies
 class CourseNotLinkedWithMoodle(Exception): pass
 
 class CourseDir(Directory):
