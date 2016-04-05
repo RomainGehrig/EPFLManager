@@ -46,8 +46,8 @@ class Path(object):
         parent_path = self.parent.fullpath() if isinstance(self.parent, Path) else self.parent
         return os.path.join(parent_path, self.name)
 
-    def clear_cache(self):
-        self._cache = {}
+    # def clear_cache(self):
+    #     self._cache = {}
 
     @staticmethod
     def split_parent(path):
@@ -71,6 +71,7 @@ class Path(object):
 
 class Directory(Path):
     """ Represent a directory in the filesystem """
+
     def read_file(self, filename, raiseException=False):
         path = os.path.join(self.fullpath(), filename)
         try:
@@ -89,11 +90,11 @@ class Directory(Path):
         p = self.fullpath()
         return [d for d in os.listdir(p) if os.path.isdir(os.path.join(p,d))]
 
-    def _names_of_files(self, hidden=False):
-        """ Return the files in the specified path (only filename)
-        Return hidden files if hidden is set to True. """
-        p = self.fullpath()
-        return [f for f in os.listdir(p) if os.path.isfile(os.path.join(p,f)) and f.startswith(".") <= hidden]
+  #  def _names_of_files(self, hidden=False):
+  #      """ Return the files in the specified path (only filename)
+  #      Return hidden files if hidden is set to True. """
+  #      p = self.fullpath()
+  #      return [f for f in os.listdir(p) if os.path.isfile(os.path.join(p,f)) and f.startswith(".") <= hidden]
 
     @Path.memoize("dirs")
     def dirs(self):

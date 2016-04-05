@@ -7,7 +7,6 @@ from epflmanager.io import *
 
 logger = logging.getLogger(__name__)
 
-
 class SemesterNotFound(Exception): pass
 class CourseNotFound(Exception): pass
 
@@ -90,7 +89,7 @@ class CourseHandler(components.Component):
 
         return self._semesters[semester][course_name]
 
-    def add_course(self, course_name, semester=None):
+    def add_course(self, course_name, semester=None, ask_confirmation=False):
         # Possible ways to add a course:
         # - Inexisting directory
         # - Existing directory but not in the right place
@@ -102,12 +101,8 @@ class CourseHandler(components.Component):
         course_directory = os.path.join(semester_dir, course_name)
 
         console = components.get("Console")
-        if os.path.exists(course_directory) and not os.path.isdir(course_directory):
-            console.warn("Path %s already exists and is not a directory" % course_directory)
-            return False
-
-        if not semester.create_directory_if_not_exists(course_directory):
-            console.warn("Directory %s does not exist. Aborting." % course_directory)
+        if not semester.create_directory_if_not_exists(course_directory, ask_confirmation):
+            console.warn("Directory %s was not created. Aborting." % course_directory)
             return False
 
         # Directory was created

@@ -82,6 +82,17 @@ class FileOrganizerTest(fakefs.TestCase):
 
     #========================= TESTS ON Path ==========================#
 
+    def test_repr(self):
+        p = Path("/")("new")
+        self.assertEqual("<Path: new>", repr(p))
+
+    def test_is_file(self):
+        root = self.create_basic_filesystem()
+        file_ = Path(root)("FileInRoot")
+
+        self.assertFalse(root.is_file())
+        self.assertTrue(file_.is_file())
+
     def test_fullpath_with_parent_as_string(self):
         dir_creator = Directory(self.root)
         dirs = ["test", "spam", "egg"]

@@ -6,7 +6,7 @@ import itertools
 
 import pyfakefs.fake_filesystem_unittest as fakefs
 
-from epflmanager.coursehandler import CourseHandler
+from epflmanager.coursehandler import CourseHandler, SemesterNotFound, CourseNotFound
 from epflmanager.io.fileorganizer import Directory
 from epflmanager.io.specialdirs import SemesterDir, CourseDir, CourseNotLinkedWithMoodle
 import epflmanager.components as components
@@ -146,6 +146,38 @@ class CourseHandlerTest(fakefs.TestCase):
 
         self.assertSetEqual(set(found_semesters), semesters)
 
+    def test_get_course_with_no_semester_given_use_latest_semester(self):
+        root = self.create_classic_epfl_hierarchy()
+        with self.ch:
+            sem = self.ch.latest_semester()
+            courses = self.ch.courses(sem)
+            for c in courses:
+                self.assertEqual(self.ch.get_course(c.name), c)
+
+    def test_courses_with_no_semester_given_use_latest_semester(self):
+        root = self.create_classic_epfl_hierarchy()
+        with self.ch:
+            sem = self.ch.latest_semester()
+            courses = self.ch.courses()
+            expected_courses = self.ch.courses(sem)
+            self.assertSetEqual(set(courses), set(expected_courses))
+
+    def test_get_course_throws_exception_when_no_course_is_found(self):
+        root = self.create_classic_epfl_hierarchy()
+        with self.ch:
+            with self.assertRaises(CourseNotFound):
+                self.ch.get_course("NONEXISTING")
+
+    def test_get_semesters_fails_with_exception_on_inexisting_semester(self):
+        with self.ch:
+            with self.assertRaises(SemesterNotFound):
+                self.ch.get_semester("NONEXISTING")
+
+    def test_latest_semester_raises_exception_when_no_semester_exists(self):
+        with self.ch:
+            with self.assertRaises(SemesterNotFound):
+                self.ch.latest_semester()
+
     def test_semesters_does_not_list_inexisting_semesters(self):
         rsemesters = self.random_semesters(4)
         self.create_classic_epfl_hierarchy(semesters=rsemesters)
@@ -211,6 +243,19 @@ class CourseHandlerTest(fakefs.TestCase):
             self.assertTrue(creation_success == expected_result)
             semester_path = semester.fullpath()
             self.assertTrue(os.path.isdir(os.path.join(semester_path, course_name)) == creation_success)
+
+    def test_add_course_with_no_semester_given_should_create_in_latest_semester(self):
+        root = self.create_classic_epfl_hierarchy(semesters=self.all_semesters)
+        course_name = "NEWCOURSE1"
+        with self.ch:
+            semester = self.ch.latest_semester()
+            creation_success = self.ch.add_course(course_name)
+            self.assertTrue(creation_success)
+            self.assertIsNotNone(self.ch.get_course(course_name, semester))
+
+    def test_add_course_fails_if_file_with_same_name_exists(self):
+        root = self.create_classic_epfl_hierarchy(semesters=self.all_semesters)
+        self.create_course_and_assert_existence("schedule.png", random.choice(self.all_semesters), False)
 
     def test_add_course_create_course_in_right_semester(self):
         root = self.create_classic_epfl_hierarchy(semesters=self.all_semesters)
