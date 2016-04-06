@@ -38,13 +38,11 @@ parser = argparse.ArgumentParser(description='Manage EPFL courses')
 parser.add_argument("--config"
                     , action='store'
                     , default=None
-                    , type=str
-                    , nargs="?")
+                    , type=str)
 parser.add_argument("--semester"
                     , action='store'
                     , default=None
-                    , type=str
-                    , nargs="?")
+                    , type=str)
 
 subparsers = parser.add_subparsers()
 open_parser = subparsers.add_parser("open", aliases=["o"])
